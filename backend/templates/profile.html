@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  {{ user.username }}'s Profile Page
+  <p><a href="{% url 'logout' %}">logout</a></p>
+{% else %}
+  <p>You are a Guest User</p>
+  <p>
+  	Apply to be an Orinary User:
+  	<button>
+  		<a href="{% url 'apply' %}" style="text-decoration:none;">Apply</a>
+  	</button>
+  </p>
+{% endif %}
+{% endblock %}
