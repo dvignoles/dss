@@ -3,7 +3,7 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-{% if user.is_authenticated %}
+{% if user.is_authenticated and user.is_OU%}
   {{ user.username }}'s Profile Page
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% else %}

@@ -3,7 +3,8 @@ from django.db import models
 
 class CustomUser(AbstractUser):
     # add additional fields in here
-    interests = models.CharField(max_length=100)
+    interests = models.CharField(max_length=100, default='none')
+    is_OU = models.BooleanField('OU status', default=False)
 
     def __str__(self):
         return self.interests
