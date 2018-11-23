@@ -7,4 +7,4 @@ class CustomUser(AbstractUser):
     is_OU = models.BooleanField('OU status', default=False)
 
     def __str__(self):
-        return self.interests
+        return self.username
