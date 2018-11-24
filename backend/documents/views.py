@@ -5,6 +5,7 @@ from django.views import generic
 
 from .forms import DocumentCreationForm
 from django.http import HttpResponse
+from django.http import HttpResponseRedirect
 
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
@@ -37,7 +38,8 @@ def CreateDoc(request):
             doc.owner = request.user
             doc.save()
             #return HttpResponse('Your document ' + doc.title + ' was saved!')
-            return render(request, 'profile.html')
+            #return render(request, 'profile.html')
+            return HttpResponseRedirect('/profile')
     else:
         form = DocumentCreationForm()
     return render(request, 'createDoc.html', {
