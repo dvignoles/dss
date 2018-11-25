@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import DocumentCreationForm
+from .forms import DocumentCreationForm, AddLineForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
@@ -54,3 +54,21 @@ def ViewDoc(request, title, doc_id, content):
 		'doc_id': doc_id,
     	'content': content.split('/'),
     })
+
+def AddLine(request, doc_id):
+	if request.method == 'POST':
+		form = AddLineForm(request.POST)
+		if form.is_valid():
+			docs = Document.objects.filter(id=doc_id)
+			for doc in docs:
+				oldContent = doc.content
+			newContent = form.cleaned_data['newContent']
+			if oldContent == "":
+				updatedContent = newContent
+			else:
+				updatedContent = oldContent + '/' + newContent
+			Document.objects.filter(id=doc_id).update(content=updatedContent)
+			return HttpResponseRedirect('/profile')
+	else:
+		form = AddLineForm()
+	return render(request, 'addLine.html', {'form': form})

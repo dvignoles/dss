@@ -3,6 +3,7 @@
 {% block title %}View Doc{% endblock %}
 
 {% block content %}
+<div>
   <p style="font-weight:bold;">{{ title }}</p>
     <ol style="border:solid; display:inline-block; padding:1em">
       {% for c in content %}
@@ -11,5 +12,11 @@
         </li>
       {% endfor %}
     </ol>
+</div>
+<div>
+  <button>
+    <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+  </button>
+</div>
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% endblock %}

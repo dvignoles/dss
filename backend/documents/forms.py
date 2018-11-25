@@ -21,3 +21,6 @@ class DocumentCreationForm(forms.ModelForm):
 # 	    self.fields['owner'].initial = request.user.id
 # 	    #self.save()
 # #	    print(request.user.id)
+
+class AddLineForm(forms.Form):
+	newContent = forms.CharField(label='New Content', max_length=100)
