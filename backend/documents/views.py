@@ -7,6 +7,8 @@ from .forms import DocumentCreationForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
+from documents.models import Document
+
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
 # 	success_url = reverse_lazy('profile')
@@ -44,4 +46,11 @@ def CreateDoc(request):
         form = DocumentCreationForm()
     return render(request, 'createDoc.html', {
         'form': form
+    })
+
+def ViewDoc(request, title, doc_id, content):
+	return render(request, 'viewDoc.html', {
+		'title': title,
+		'doc_id': doc_id,
+    	'content': content.split('/'),
     })
