@@ -4,9 +4,9 @@
 
 {% block content %}
   <p style="font-weight:bold;">{{ title }}</p>
-    <ol>
+    <ol style="border:solid; display:inline-block; padding:1em">
       {% for c in content %}
-      	<li style="padding-left: 1em;">
+      	<li style="padding-left: 0.5em;">
           {{ c }}
         </li>
       {% endfor %}
