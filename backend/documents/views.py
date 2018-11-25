@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm
+from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
@@ -89,3 +89,21 @@ def DeleteLine(request, doc_id):
 	else:
 		form = DeleteLineForm()
 	return render(request, 'deleteLine.html', {'form': form})
+
+def UpdateLine(request, doc_id):
+	if request.method == 'POST':
+		form = UpdateLineForm(request.POST)
+		if form.is_valid():
+			docs = Document.objects.filter(id=doc_id)
+			for doc in docs:
+				content = doc.content
+			content = content.split('/')
+			lineToUpdate = form.cleaned_data['lineToUpdate']
+			newContent = form.cleaned_data['newContent']
+			content[lineToUpdate-1] = newContent
+			content = '/'.join(content)
+			Document.objects.filter(id=doc_id).update(content=content)
+			return HttpResponseRedirect('/profile')
+	else:
+		form = UpdateLineForm()
+	return render(request, 'updateLine.html', {'form': form})

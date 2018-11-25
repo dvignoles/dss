@@ -27,3 +27,7 @@ class AddLineForm(forms.Form):
 
 class DeleteLineForm(forms.Form):
 	lineToDelete = forms.IntegerField(label='Delete Line #', max_value=1000000)
+
+class UpdateLineForm(forms.Form):
+	lineToUpdate = forms.IntegerField(label='Update Line #', max_value=1000000)
+	newContent = forms.CharField(label='New Content', max_length=100)
