@@ -21,3 +21,13 @@ class DocumentCreationForm(forms.ModelForm):
 # 	    self.fields['owner'].initial = request.user.id
 # 	    #self.save()
 # #	    print(request.user.id)
+
+class AddLineForm(forms.Form):
+	newContent = forms.CharField(label='New Content', max_length=100)
+
+class DeleteLineForm(forms.Form):
+	lineToDelete = forms.IntegerField(label='Delete Line #', max_value=1000000)
+
+class UpdateLineForm(forms.Form):
+	lineToUpdate = forms.IntegerField(label='Update Line #', max_value=1000000)
+	newContent = forms.CharField(label='New Content', max_length=100)

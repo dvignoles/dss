@@ -3,13 +3,26 @@
 {% block title %}View Doc{% endblock %}
 
 {% block content %}
+<div>
   <p style="font-weight:bold;">{{ title }}</p>
-    <ol>
+    <ol style="border:solid; display:inline-block; padding:1em">
       {% for c in content %}
-      	<li style="padding-left: 1em;">
+      	<li style="padding-left: 0.5em;">
           {{ c }}
         </li>
       {% endfor %}
     </ol>
+</div>
+<div>
+  <button>
+    <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+  </button>
+  <button>
+    <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+  </button>
+  <button>
+    <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
+  </button>
+</div>
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% endblock %}
