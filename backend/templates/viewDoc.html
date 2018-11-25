@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}View Doc{% endblock %}
+
+{% block content %}
+  <p style="font-weight:bold;">{{ title }}</p>
+    <ol>
+      {% for c in content %}
+      	<li style="padding-left: 1em;">
+          {{ c }}
+        </li>
+      {% endfor %}
+    </ol>
+  <p><a href="{% url 'logout' %}">logout</a></p>
+{% endblock %}
