@@ -17,6 +17,9 @@
   <button>
     <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
   </button>
+  <button>
+    <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+  </button>
 </div>
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% endblock %}

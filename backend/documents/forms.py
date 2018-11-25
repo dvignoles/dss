@@ -24,3 +24,6 @@ class DocumentCreationForm(forms.ModelForm):
 
 class AddLineForm(forms.Form):
 	newContent = forms.CharField(label='New Content', max_length=100)
+
+class DeleteLineForm(forms.Form):
+	lineToDelete = forms.IntegerField(label='Delete Line #', max_value=1000000)
