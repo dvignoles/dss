@@ -11,9 +11,16 @@ class Apply(generic.CreateView):
     success_url = reverse_lazy('login')
     template_name = 'apply.html'
 
-def getUsers():
+def getAllUsernames():
 	allUsers = CustomUser.objects.all()
 	users = []
 	for user in allUsers:
+		users.append(user.username)
+	return users
+
+def getOuUsernames():
+	OUs = CustomUser.objects.filter(is_OU=True)
+	users = []
+	for user in OUs:
 		users.append(user.username)
 	return users

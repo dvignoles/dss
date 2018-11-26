@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 from documents.models import Document, CustomUser
-from users.views import getUsers
+from users.views import getOuUsernames
 
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
@@ -110,7 +110,7 @@ def UpdateLine(request, doc_id):
 	return render(request, 'updateLine.html', {'form': form})
 
 def ShareDoc(request, doc_id):
-	usernames = getUsers()
+	usernames = getOuUsernames()
 	if request.method == 'POST':
 		form = ShareDocForm(request.POST)
 		usernameSharedWith = request.POST.get('username-dropdown')
