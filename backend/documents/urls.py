@@ -8,5 +8,5 @@ urlpatterns = [
     url(r'^deleteLine/(?P<doc_id>[0-9]*)$', views.DeleteLine, name='deleteLine'),
     url(r'^updateLine/(?P<doc_id>[0-9]*)$', views.UpdateLine, name='updateLine'),
     #path('view/', views.ViewDoc, name='view'),
-    url(r'^view/(?P<title>[\w\W]*)(?P<doc_id>[0-9]+)(?P<content>[\s\S]*)$', views.ViewDoc, name='view'),
+    url(r'^view/(?P<title>[a-zA-Z_ +]*)(?P<doc_id>[0-9]*)(?P<content>[\s\S]*)$', views.ViewDoc, name='view'),
 ]
