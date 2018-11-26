@@ -5,18 +5,27 @@
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
   <p style="font-weight:bold">{{ user.username }}'s Profile Page</p>
+  <p>Interests: {{ interests }}</p>
   <p>
 	  <button>
 		<a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
 	  </button>
   </p>
-  <div style="border:solid; display:inline-block; padding:1em">
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
 	  <p style="font-weight:bold; text-decoration:underline;">My Documents</p>
 	  {% for doc in myDocs %}
 	  	<p>
 	  		<a href={% url 'view' doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
 	  	</p>
 	  {% endfor %}
+  </div>
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
+	  <p style="font-weight:bold; text-decoration:underline;">Shared Documents</p>
+	  
+  </div>
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
+	  <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>
+	  
   </div>
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% else %}
