@@ -21,7 +21,11 @@
   </div>
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
 	  <p style="font-weight:bold; text-decoration:underline;">Shared Documents</p>
-	  
+	  {% for doc in sharedDocs %}
+	  	<p>
+	  		<a href={% url 'view' doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+	  	</p>
+	  {% endfor %}
   </div>
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
 	  <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>

@@ -5,6 +5,7 @@
 {% block content %}
 <form action="" method="post" >
 	{% csrf_token %}
+	Share with:
 	<select name="username-dropdown">
 		{% for username in usernames %}
 		    <option value="{{ username }}">{{ username }}</option>
