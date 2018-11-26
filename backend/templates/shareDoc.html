@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Share Doc{% endblock %}
+
+{% block content %}
+<form action="" method="post" >
+	{% csrf_token %}
+	<select name="username-dropdown">
+		{% for username in usernames %}
+		    <option value="{{ username }}">{{ username }}</option>
+		{% endfor %}
+	</select>
+	<input type="submit" value="OK">
+</form>
+{% endblock %}

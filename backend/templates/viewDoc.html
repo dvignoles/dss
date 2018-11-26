@@ -4,7 +4,12 @@
 
 {% block content %}
 <div>
-  <p style="font-weight:bold;">{{ title }}</p>
+  <div>
+    <p style="font-weight:bold;">{{ title }}</p>
+    <button>
+      <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+    </button>
+  </div>
     <ol style="border:solid; display:inline-block; padding:1em">
       {% for c in content %}
       	<li style="padding-left: 0.5em;">

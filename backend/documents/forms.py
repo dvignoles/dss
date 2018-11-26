@@ -31,3 +31,6 @@ class DeleteLineForm(forms.Form):
 class UpdateLineForm(forms.Form):
 	lineToUpdate = forms.IntegerField(label='Update Line #', max_value=1000000)
 	newContent = forms.CharField(label='New Content', max_length=100)
+
+class ShareDocForm(forms.Form):
+	shareWith = forms.CharField(label='Share with', max_length=100)

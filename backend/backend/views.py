@@ -13,7 +13,6 @@ def Profile(request):
 	user = CustomUser.objects.filter(id=request.user.id)
 	for u in user:
 		interests = u.interests
-	print(interests)
 	return render(request, 'profile.html', {
     	'myDocs': Document.objects.filter(owner=request.user.id),
     	'interests': interests,
