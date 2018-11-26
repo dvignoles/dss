@@ -49,8 +49,10 @@ def CreateDoc(request):
         'form': form
     })
 
-def ViewDoc(request, title, doc_id, content):
+def ViewDoc(request, owner_id, title, doc_id, content):
 	return render(request, 'viewDoc.html', {
+		'user_id': str(request.user.id),
+		'owner_id': str(owner_id),
 		'title': title,
 		'doc_id': doc_id,
     	'content': content.split('/'),
