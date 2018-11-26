@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>share'n'complain</h1>
+<button style="position: fixed; left: 50%; transform: translate(-50%, -50%);">
+	<a href="{% url 'login' %}" style="text-decoration:none;">Enter</a>
+</button>
+{% endblock %}
