@@ -10,11 +10,18 @@ from documents.models import CustomUser
 
 def Profile(request):
 	#print(request.user.id)
+	my_id = str(request.user.id)
 	user = CustomUser.objects.filter(id=request.user.id)
 	for u in user:
 		interests = u.interests
-	print(interests)
+	allDocs = Document.objects.all()
+	sharedDocs = []
+	for doc in allDocs:
+		collaborators = doc.collaborators.split('/')
+		if my_id in collaborators:
+			sharedDocs.append(doc)
 	return render(request, 'profile.html', {
     	'myDocs': Document.objects.filter(owner=request.user.id),
+    	'sharedDocs': sharedDocs,
     	'interests': interests,
     })

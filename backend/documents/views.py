@@ -3,11 +3,12 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm
+from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
-from documents.models import Document
+from documents.models import Document, CustomUser
+from users.views import getOuUsernames
 
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
@@ -48,8 +49,10 @@ def CreateDoc(request):
         'form': form
     })
 
-def ViewDoc(request, title, doc_id, content):
+def ViewDoc(request, owner_id, title, doc_id, content):
 	return render(request, 'viewDoc.html', {
+		'user_id': str(request.user.id),
+		'owner_id': str(owner_id),
 		'title': title,
 		'doc_id': doc_id,
     	'content': content.split('/'),
@@ -107,3 +110,32 @@ def UpdateLine(request, doc_id):
 	else:
 		form = UpdateLineForm()
 	return render(request, 'updateLine.html', {'form': form})
+
+def ShareDoc(request, doc_id):
+	usernames = getOuUsernames()
+	if request.method == 'POST':
+		form = ShareDocForm(request.POST)
+		usernameSharedWith = request.POST.get('username-dropdown')
+		print(usernameSharedWith)
+		usersSharedWith = CustomUser.objects.filter(username=usernameSharedWith)
+		for user in usersSharedWith:
+			user_id = user.id
+		docs = Document.objects.filter(id=doc_id)
+		for doc in docs:
+			collaborators = doc.collaborators
+		if collaborators == "":
+			Document.objects.filter(id=doc_id).update(collaborators=str(user_id))
+		else:
+			Document.objects.filter(id=doc_id).update(collaborators=str(collaborators) + '/' + str(user_id))
+		# content = content.split('/')
+		# lineToUpdate = form.cleaned_data['lineToUpdate']
+		# newContent = form.cleaned_data['newContent']
+		# content[lineToUpdate-1] = newContent
+		# content = '/'.join(content)
+		# Document.objects.filter(id=doc_id).update(content=content)
+		return HttpResponseRedirect('/profile')
+	else:
+		form = ShareDocForm()
+	return render(request, 'shareDoc.html', {
+		'usernames': usernames,
+		})
