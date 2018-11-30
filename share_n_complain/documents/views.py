@@ -59,7 +59,6 @@ def ViewDoc(request, owner_id, title, doc_id, content):
 		is_collaborator = True
 	else:
 		is_collaborator = False
-	print(request.user.id, collaborators, is_collaborator)
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
@@ -76,12 +75,18 @@ def AddLine(request, doc_id):
 		if form.is_valid():
 			docs = Document.objects.filter(id=doc_id)
 			for doc in docs:
-				oldContent = doc.content
-			newContent = form.cleaned_data['newContent']
-			if oldContent == "":
-				updatedContent = newContent
+				content = doc.content
+			content = content.split('/')
+			lineToAdd = form.cleaned_data['lineToAdd']
+			if len(content) == 1:
+				secondHalf = content
+				updatedContent = [form.cleaned_data['newContent']] + secondHalf
+				updatedContent = '/'.join(updatedContent)
 			else:
-				updatedContent = oldContent + '/' + newContent
+				firstHalf = content[0:lineToAdd-1]
+				secondHalf = content[lineToAdd-1:]
+				updatedContent = firstHalf + [form.cleaned_data['newContent']] + secondHalf
+				updatedContent = '/'.join(updatedContent)
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			return HttpResponseRedirect('/profile')
 	else:
