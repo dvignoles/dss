@@ -5,7 +5,13 @@
 {% block content %}
 <div>
   <div>
-    <p style="font-weight:bold;">{{ title }}</p>
+    <p style="font-weight:bold;">Title: {{ title }}</p>
+    {% if private %}
+      <p>Classification: Private</p>
+    {% endif %}
+    {% if not private %}
+      <p>Classification: Public</p>
+    {% endif %}
     {% ifequal user_id owner_id %}
       {% if not private %}
         <button>
