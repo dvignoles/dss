@@ -6,11 +6,13 @@
 <div>
   <div>
     <p style="font-weight:bold;">Title: {{ title }}</p>
-    {% if private %}
-      <p>Classification: Private</p>
-    {% endif %}
-    {% if not private %}
-      <p>Classification: Public</p>
+    {% if owner_id == user_id %}
+      {% if private %}
+        <p>Classification: Private</p>
+      {% endif %}
+      {% if not private %}
+        <p>Classification: Public</p>
+      {% endif %}
     {% endif %}
     {% ifequal user_id owner_id %}
       {% if not private %}
