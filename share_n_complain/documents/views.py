@@ -7,7 +7,9 @@ from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLine
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
-from documents.models import Document, CustomUser
+from documents.models import Document, History
+from users.models import CustomUser
+
 from users.views import getOuUsernames
 
 # class CreateDoc(generic.CreateView):
@@ -70,28 +72,56 @@ def ViewDoc(request, owner_id, title, doc_id, content):
     })
 
 def AddLine(request, doc_id):
+	####  Adds to the end of the file
 	if request.method == 'POST':
 		form = AddLineForm(request.POST)
 		if form.is_valid():
 			docs = Document.objects.filter(id=doc_id)
 			for doc in docs:
-				content = doc.content
-			content = content.split('/')
-			lineToAdd = form.cleaned_data['lineToAdd']
-			if len(content) == 1:
-				secondHalf = content
-				updatedContent = [form.cleaned_data['newContent']] + secondHalf
-				updatedContent = '/'.join(updatedContent)
+				oldContent = doc.content
+				currentVersion = doc.version
+			newContent = form.cleaned_data['newContent']
+			if oldContent == "":
+				updatedContent = newContent
 			else:
-				firstHalf = content[0:lineToAdd-1]
-				secondHalf = content[lineToAdd-1:]
-				updatedContent = firstHalf + [form.cleaned_data['newContent']] + secondHalf
-				updatedContent = '/'.join(updatedContent)
+				updatedContent = oldContent + '/' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
+			Document.objects.filter(id=doc_id).update(version=currentVersion+1)
+			lineToRemove = len(oldContent.split('/'))
+			changes = 'delete-' + newContent + '-' + str(lineToRemove) #lineToRemove refers to position [lineToRemove] of Document.content
+			docHistory = History.objects.filter(doc_id=doc_id)
+			for dh in docHistory:
+				prevChanges = dh.changes
+				History.objects.filter(id=dh.id).update(changes=changes + '/' + prevChanges)
+			History.objects.create(doc_id=doc_id, version=currentVersion, changes=changes) #to revert to this version <--, do these changes
 			return HttpResponseRedirect('/profile')
 	else:
 		form = AddLineForm()
 	return render(request, 'addLine.html', {'form': form})
+	####  Adds to a specific line number
+	# if request.method == 'POST':
+	# 	form = AddLineForm(request.POST)
+	# 	if form.is_valid():
+	# 		docs = Document.objects.filter(id=doc_id)
+	# 		for doc in docs:
+	# 			content = doc.content
+	# 		content = content.split('/')
+	# 		lineToAdd = form.cleaned_data['lineToAdd']
+	# 		if len(content) == 1:
+	# 			secondHalf = content
+	# 			updatedContent = [form.cleaned_data['newContent']] + secondHalf
+	# 			updatedContent = '/'.join(updatedContent)
+	# 		else:
+	# 			firstHalf = content[0:lineToAdd-1]
+	# 			secondHalf = content[lineToAdd-1:]
+	# 			updatedContent = firstHalf + [form.cleaned_data['newContent']] + secondHalf
+	# 			updatedContent = '/'.join(updatedContent)
+	# 		Document.objects.filter(id=doc_id).update(content=updatedContent)
+	# 		return HttpResponseRedirect('/profile')
+	# else:
+	# 	form = AddLineForm()
+	# return render(request, 'addLine.html', {'form': form})
+
 
 def DeleteLine(request, doc_id):
 	if request.method == 'POST':

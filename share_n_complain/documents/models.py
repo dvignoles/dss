@@ -16,7 +16,7 @@ class Document(models.Model):
 
 class History(models.Model):
 	doc = models.ForeignKey(Document, null=False, on_delete=models.CASCADE)
-	vsn = models.IntegerField(null=False)
+	version = models.IntegerField(null=False)
 	changes = models.CharField(max_length=100, null=False)
 	
 	def __str__(self):

@@ -4,7 +4,7 @@
 
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
-  <p style="font-weight:bold">{{ user.username }}'s Profile Page</p>
+  <h2 style="font-weight:bold">{{ user.username }}'s Profile Page</h2>
   <p>Interests: {{ interests }}</p>
   <p>
 	  <button>
@@ -12,7 +12,7 @@
 	  </button>
   </p>
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
-	  <p style="font-weight:bold; text-decoration:underline;">My Documents</p>
+	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
 	  {% for doc in myDocs %}
 	  	<p>
 	  		<a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
@@ -20,7 +20,7 @@
 	  {% endfor %}
   </div>
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
-	  <p style="font-weight:bold; text-decoration:underline;">Shared Documents</p>
+	  <h3 style="font-weight:bold; text-decoration:underline;">Shared Documents</h3>
 	  {% for doc in sharedDocs %}
 	  	<p>
 	  		<a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
@@ -28,7 +28,7 @@
 	  {% endfor %}
   </div>
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
-	  <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>
+	  <h3 style="font-weight:bold; text-decoration:underline;">Public Documents</h3>
 	  {% for doc in publicDocs %}
       <p>
         <a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
