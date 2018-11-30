@@ -5,11 +5,19 @@
 {% block content %}
 <div>
   <div>
-    <p style="font-weight:bold;">{{ title }}</p>
+    <p style="font-weight:bold;">Title: {{ title }}</p>
+    {% if private %}
+      <p>Classification: Private</p>
+    {% endif %}
+    {% if not private %}
+      <p>Classification: Public</p>
+    {% endif %}
     {% ifequal user_id owner_id %}
-    <button>
-      <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
-    </button>
+      {% if not private %}
+        <button>
+          <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+        </button>
+      {% endif %}
     {% endifequal %}
   </div>
     <ol style="border:solid; display:inline-block; padding:1em">
@@ -20,16 +28,20 @@
       {% endfor %}
     </ol>
 </div>
-<div>
-  <button>
-    <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
-  </button>
-  <button>
-    <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
-  </button>
-  <button>
-    <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
-  </button>
-</div>
-  <p><a href="{% url 'logout' %}">logout</a></p>
+{% if user.is_OU %}
+  {% if is_collaborator or owner_id == user_id %}
+    <div>
+      <button>
+        <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+      </button>
+      <button>
+        <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+      </button>
+      <button>
+        <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
+      </button>
+    </div>
+      <p><a href="{% url 'logout' %}">logout</a></p>
+  {% endif %}
+{% endif %}
 {% endblock %}

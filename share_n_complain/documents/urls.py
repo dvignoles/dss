@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^shareDoc/(?P<doc_id>[0-9]*)$', views.ShareDoc, name='shareDoc'),
     #path('view/', views.ViewDoc, name='view'),
     url(r'^view/(?P<owner_id>[0-9]*)(?P<title>[a-zA-Z_ +]*)(?P<doc_id>[0-9]*)(?P<content>[\s\S]*)$', views.ViewDoc, name='view'),
+
 ]

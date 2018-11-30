@@ -50,12 +50,24 @@ def CreateDoc(request):
     })
 
 def ViewDoc(request, owner_id, title, doc_id, content):
+	docs = Document.objects.filter(id=doc_id)
+	for doc in docs:
+		private = doc.private
+		collaborators = doc.collaborators
+	collaborators = collaborators.split('/')
+	if str(request.user.id) in collaborators:
+		is_collaborator = True
+	else:
+		is_collaborator = False
+	print(request.user.id, collaborators, is_collaborator)
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
 		'title': title,
+		'private': private,
 		'doc_id': doc_id,
     	'content': content.split('/'),
+    	'is_collaborator': is_collaborator,
     })
 
 def AddLine(request, doc_id):

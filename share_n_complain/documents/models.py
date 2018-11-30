@@ -7,6 +7,7 @@ class Document(models.Model):
 	collaborators = models.CharField(max_length=100, default='')
 	title = models.CharField(max_length=100, default='')
 	content = models.CharField(max_length=10000, default='')
+	private = models.BooleanField('Classification', default=False)
 	
 	def __str__(self):
 		doc = [self.owner, self.collaborators, self.content]
