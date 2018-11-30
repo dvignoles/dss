@@ -28,16 +28,18 @@
       {% endfor %}
     </ol>
 </div>
-<div>
-  <button>
-    <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
-  </button>
-  <button>
-    <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
-  </button>
-  <button>
-    <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
-  </button>
-</div>
-  <p><a href="{% url 'logout' %}">logout</a></p>
+{% if user.is_OU %}
+  <div>
+    <button>
+      <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+    </button>
+    <button>
+      <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+    </button>
+    <button>
+      <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
+    </button>
+  </div>
+    <p><a href="{% url 'logout' %}">logout</a></p>
+{% endif %}
 {% endblock %}
