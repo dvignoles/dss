@@ -11,7 +11,7 @@
 		<a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
 	  </button>
   </p>
-  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
 	  <p style="font-weight:bold; text-decoration:underline;">My Documents</p>
 	  {% for doc in myDocs %}
 	  	<p>
@@ -19,7 +19,7 @@
 	  	</p>
 	  {% endfor %}
   </div>
-  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
 	  <p style="font-weight:bold; text-decoration:underline;">Shared Documents</p>
 	  {% for doc in sharedDocs %}
 	  	<p>
@@ -27,9 +27,13 @@
 	  	</p>
 	  {% endfor %}
   </div>
-  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top;">
+  <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
 	  <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>
-	  
+	  {% for doc in publicDocs %}
+      <p>
+        <a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+      </p>
+    {% endfor %}
   </div>
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% else %}
