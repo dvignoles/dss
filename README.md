@@ -5,7 +5,7 @@
 ## Dev Setup
 1. Move to backend directory
 ```
-$ cd backend
+$ cd share_n_complain
 ```
 2. Create virtual environment (only required on initial setup)
 ```
@@ -19,7 +19,7 @@ $ source ~/.virtualenvs/sharencomplain/bin/activate
 ```
 $ pip install Django
 ```
-5. Launch backend
+5. Launch share_n_complain
 ```
 $ python3 manage.py runserver
 ```

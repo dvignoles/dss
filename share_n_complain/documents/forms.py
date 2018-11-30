@@ -24,6 +24,8 @@ class DocumentCreationForm(forms.ModelForm):
 # #	    print(request.user.id)
 
 class AddLineForm(forms.Form):
+	####  Adds to a specific line number
+	#lineToAdd = forms.IntegerField(label='Add Line #', max_value=1000000)
 	newContent = forms.CharField(label='New Content', max_length=100)
 
 class DeleteLineForm(forms.Form):
