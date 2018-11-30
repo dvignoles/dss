@@ -92,8 +92,10 @@ def AddLine(request, doc_id):
 			docHistory = History.objects.filter(doc_id=doc_id)
 			for dh in docHistory:
 				prevChanges = dh.changes
+				prevUpdaters = dh.updater_ids
 				History.objects.filter(id=dh.id).update(changes=changes + '/' + prevChanges)
-			History.objects.create(doc_id=doc_id, version=currentVersion, changes=changes) #to revert to this version <--, do these changes
+				History.objects.filter(id=dh.id).update(updater_ids=str(request.user.id) + '/' + prevUpdaters)
+			History.objects.create(doc_id=doc_id, version=currentVersion, changes=changes, updater_ids=str(request.user.id)) #to revert to this version <--, do these changes in sequence
 			return HttpResponseRedirect('/profile')
 	else:
 		form = AddLineForm()

@@ -18,6 +18,7 @@ class History(models.Model):
 	doc = models.ForeignKey(Document, null=False, on_delete=models.CASCADE)
 	version = models.IntegerField(null=False)
 	changes = models.CharField(max_length=100, null=False)
+	updater_ids = models.CharField(max_length=100, null=False, default='')
 	
 	def __str__(self):
 		history = [self.doc_id, self.vsn]
