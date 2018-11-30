@@ -7,9 +7,11 @@
   <div>
     <p style="font-weight:bold;">{{ title }}</p>
     {% ifequal user_id owner_id %}
-    <button>
-      <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
-    </button>
+      {% if not private %}
+        <button>
+          <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+        </button>
+      {% endif %}
     {% endifequal %}
   </div>
     <ol style="border:solid; display:inline-block; padding:1em">

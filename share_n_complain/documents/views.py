@@ -50,10 +50,14 @@ def CreateDoc(request):
     })
 
 def ViewDoc(request, owner_id, title, doc_id, content):
+	docs = Document.objects.filter(id=doc_id)
+	for doc in docs:
+		private = doc.private
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
 		'title': title,
+		'private': private,
 		'doc_id': doc_id,
     	'content': content.split('/'),
     })
