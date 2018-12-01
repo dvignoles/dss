@@ -51,9 +51,12 @@ def CreateDoc(request):
         'form': form
     })
 
-def ViewDoc(request, owner_id, title, doc_id, content):
+def ViewDoc(request, doc_id):
 	docs = Document.objects.filter(id=doc_id)
 	for doc in docs:
+		owner_id = doc.owner_id
+		title = doc.title
+		content = doc.content
 		private = doc.private
 		collaborators = doc.collaborators
 	collaborators = collaborators.split('/')
