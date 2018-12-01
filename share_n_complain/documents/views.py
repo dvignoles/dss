@@ -79,23 +79,17 @@ def AddLine(request, doc_id):
 			docs = Document.objects.filter(id=doc_id)
 			for doc in docs:
 				oldContent = doc.content
-				currentVersion = doc.version
+				prevVersion = doc.version
 			newContent = form.cleaned_data['newContent']
 			if oldContent == "":
 				updatedContent = newContent
 			else:
 				updatedContent = oldContent + '/' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
-			Document.objects.filter(id=doc_id).update(version=currentVersion+1)
-			lineToRemove = len(oldContent.split('/'))
-			changes = 'delete-' + newContent + '-' + str(lineToRemove) #lineToRemove refers to position [lineToRemove] of Document.content
-			docHistory = History.objects.filter(doc_id=doc_id)
-			for dh in docHistory:
-				prevChanges = dh.changes
-				prevUpdaters = dh.updater_ids
-				History.objects.filter(id=dh.id).update(changes=changes + '/' + prevChanges)
-				History.objects.filter(id=dh.id).update(updater_ids=str(request.user.id) + '/' + prevUpdaters)
-			History.objects.create(doc_id=doc_id, version=currentVersion, changes=changes, updater_ids=str(request.user.id)) #to revert to this version <--, do these changes in sequence
+			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			lineToRemove = len(oldContent.split('/')) + 1
+			changes = 'delete-' + newContent + '-' + str(lineToRemove)
+			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/profile')
 	else:
 		form = AddLineForm()
@@ -132,11 +126,17 @@ def DeleteLine(request, doc_id):
 			docs = Document.objects.filter(id=doc_id)
 			for doc in docs:
 				content = doc.content
+				prevVersion = doc.version
 			content = content.split('/')
 			lineToDelete = form.cleaned_data['lineToDelete']
+			lineToAdd = lineToDelete 								#for changes in history model
+			contentToAdd = content[lineToAdd-1] 					#for changes in history model
+			changes = 'add-' + contentToAdd + '-' + str(lineToAdd)  #for changes in history model
 			del content[lineToDelete-1:lineToDelete]
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
+			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/profile')
 	else:
 		form = DeleteLineForm()
@@ -149,16 +149,31 @@ def UpdateLine(request, doc_id):
 			docs = Document.objects.filter(id=doc_id)
 			for doc in docs:
 				content = doc.content
+				prevVersion = doc.version
 			content = content.split('/')
 			lineToUpdate = form.cleaned_data['lineToUpdate']
 			newContent = form.cleaned_data['newContent']
+			oldContent = content[lineToUpdate-1]
+			changes = 'update-' + oldContent + '-' + str(lineToUpdate)
 			content[lineToUpdate-1] = newContent
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
+			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/profile')
 	else:
 		form = UpdateLineForm()
 	return render(request, 'updateLine.html', {'form': form})
+
+def updateHistory(request, doc_id, changes, prevVersion):
+	docHistory = History.objects.filter(doc_id=doc_id)
+	for dh in docHistory:
+		prevChanges = dh.changes
+		prevUpdaters = dh.updater_ids
+		History.objects.filter(id=dh.id).update(changes=changes + '/' + prevChanges)
+		History.objects.filter(id=dh.id).update(updater_ids=str(request.user.id) + '/' + prevUpdaters)
+	History.objects.create(doc_id=doc_id, version=prevVersion, changes=changes, updater_ids=str(request.user.id)) #to revert to this version <--, do these changes in sequence
+	return
 
 def ShareDoc(request, doc_id):
 	usernames = getOuUsernames()
