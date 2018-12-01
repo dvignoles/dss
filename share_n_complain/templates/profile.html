@@ -15,7 +15,7 @@
 	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
 	  {% for doc in myDocs %}
 	  	<p>
-	  		<a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
 	  	</p>
 	  {% endfor %}
   </div>
@@ -23,7 +23,7 @@
 	  <h3 style="font-weight:bold; text-decoration:underline;">Shared Documents</h3>
 	  {% for doc in sharedDocs %}
 	  	<p>
-	  		<a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
 	  	</p>
 	  {% endfor %}
   </div>
@@ -31,7 +31,7 @@
 	  <h3 style="font-weight:bold; text-decoration:underline;">Public Documents</h3>
 	  {% for doc in publicDocs %}
       <p>
-        <a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+        <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
       </p>
     {% endfor %}
   </div>
@@ -42,7 +42,7 @@
     <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>
     {% for doc in publicDocs %}
       <p>
-        <a href={% url 'view' owner_id=doc.owner_id doc_id=doc.id title=doc.title content=doc.content %} style="text-decoration:none;">{{ doc.title }}</a>
+        <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
       </p>
     {% endfor %}
   </div>
