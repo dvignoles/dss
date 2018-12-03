@@ -1,11 +1,15 @@
 <!DOCTYPE html>
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}" />  
+
 <html>
 <head>
   <meta charset="utf-8">
   <title>{% block title %}share'n'complain{% endblock %}</title>
 </head>
-<body style="display: flex;">
-  <main style="margin: auto; border-style: solid; padding: 1em;">
+<body>
+  <main>
     {% block content %}
     {% endblock %}
   </main>

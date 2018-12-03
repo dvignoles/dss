@@ -5,12 +5,12 @@
 {% block content %}
 <div>
   <div>
-    <div style="display: block; margin-bottom: -1em;">
-      <p style="font-weight:bold; margin-right: 2em;">Title: {{ title }}</p>
+    <div style="display: block;">
+      <h2 style="font-weight:bold;">{{ title }}</h2>
       <p>Version: {{ viewingVersion }}</p>
     </div>
   </div>
-    <ol style="border:solid; display:inline-block; padding:2em">
+    <ol class="doc_view">
       {% for c in content %}
         <li style="padding-left: 0.5em;">
           {{ c }}
@@ -24,7 +24,7 @@
     <button>
       <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
     </button>
-    <p><a href="{% url 'logout' %}">logout</a></p>
+    <p><a href="{% url 'logout' %}">Logout</a></p>
   </div>
 </div>
 {% endblock %}
