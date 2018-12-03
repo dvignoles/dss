@@ -5,24 +5,39 @@
 {% block content %}
 <div>
   <div>
-    <p style="font-weight:bold;">Title: {{ title }}</p>
-    {% if owner_id == user_id %}
-      {% if private %}
-        <p>Classification: Private</p>
+    <div style="display: inline-flex;">
+      <h2 style="font-weight:bold; margin: auto; margin-right: 1em;">{{ title }}</h2>
+      {% ifequal user_id owner_id %}
+        {% if not private %}
+          <button>
+            <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+          </button>
+        {% endif %}
+      {% endifequal %}
+    </div>
+    <div style="display: block;">
+      <p>Version: {{ version }}</p>
+      <p>View Previous Version: 
+        <select name="version" onchange="location = this.value">
+          <option selected="selected"></option>
+          {% for dh in docHistory %}
+            <option  value={% url 'viewOldVersion' doc_id=dh.doc_id delimiter='|' oldVersion=dh.version %}>{{ dh.version }}</option>
+          {% endfor %}
+        </select>
+      </p>
+    </div>
+    <div>
+      {% if owner_id == user_id %}
+        {% if private %}
+          <p>Classification: Private</p>
+        {% endif %}
+        {% if not private %}
+          <p>Classification: Public</p>
+        {% endif %}
       {% endif %}
-      {% if not private %}
-        <p>Classification: Public</p>
-      {% endif %}
-    {% endif %}
-    {% ifequal user_id owner_id %}
-      {% if not private %}
-        <button>
-          <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
-        </button>
-      {% endif %}
-    {% endifequal %}
+    </div>
   </div>
-    <ol style="border:solid; display:inline-block; padding:1em">
+    <ol style="border:solid; display:inline-block; padding:2em">
       {% for c in content %}
       	<li style="padding-left: 0.5em;">
           {{ c }}

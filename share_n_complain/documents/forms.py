@@ -2,7 +2,7 @@ from django import forms
 from .models import Document
 
 class DocumentCreationForm(forms.ModelForm):
-	private = forms.BooleanField(label='Private?')
+	private = forms.BooleanField(label='Private?', required=False)
 	class Meta:
 		model = Document
 		fields = ('title','private')

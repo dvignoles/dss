@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}View Old Version{% endblock %}
+
+{% block content %}
+<div>
+  <div>
+    <div style="display: block; margin-bottom: -1em;">
+      <p style="font-weight:bold; margin-right: 2em;">Title: {{ title }}</p>
+      <p>Version: {{ viewingVersion }}</p>
+    </div>
+  </div>
+    <ol style="border:solid; display:inline-block; padding:2em">
+      {% for c in content %}
+        <li style="padding-left: 0.5em;">
+          {{ c }}
+        </li>
+      {% endfor %}
+    </ol>
+  <div style="display: block;">
+    <button>
+      <a href={% url 'view' doc_id=doc_id %} style="text-decoration:none;">Current Version</a>
+    </button>
+    <button>
+      <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+    </button>
+    <p><a href="{% url 'logout' %}">logout</a></p>
+  </div>
+</div>
+{% endblock %}
