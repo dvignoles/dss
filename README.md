@@ -3,7 +3,7 @@
 ### Neal Rea, Daniel Vignoles, Carl Welch
 
 ## Dev Setup
-1. Move to backend directory
+1. Move to share_n_complain directory
 ```
 $ cd share_n_complain
 ```
