@@ -21,5 +21,5 @@ class History(models.Model):
 	updater_ids = models.CharField(max_length=100, null=False, default='')
 	
 	def __str__(self):
-		history = [self.doc_id, self.vsn]
+		history = 'doc id: ' + str(self.doc_id) + ' - version: ' + str(self.version)
 		return history

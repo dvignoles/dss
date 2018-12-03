@@ -53,12 +53,14 @@ def CreateDoc(request):
 
 def ViewDoc(request, doc_id):
 	docs = Document.objects.filter(id=doc_id)
+	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
 		owner_id = doc.owner_id
 		title = doc.title
 		content = doc.content
 		private = doc.private
 		collaborators = doc.collaborators
+		version = doc.version
 	collaborators = collaborators.split('/')
 	if str(request.user.id) in collaborators:
 		is_collaborator = True
@@ -72,7 +74,57 @@ def ViewDoc(request, doc_id):
 		'doc_id': doc_id,
     	'content': content.split('/'),
     	'is_collaborator': is_collaborator,
+    	'version': version,
+    	'docHistory': docHistory,
     })
+
+def ViewOldVersion(request, doc_id, delimiter, oldVersion):
+	docs = Document.objects.filter(id=doc_id)
+	for doc in docs:
+		owner_id = doc.owner_id
+		title = doc.title
+		content = doc.content
+		latestVersion = doc.version
+	docHistory = History.objects.filter(doc_id=doc_id)
+	versionHistory = History.objects.filter(doc_id=doc_id, version=oldVersion)
+	for vh in versionHistory:
+		versionHistory = vh
+	changes = versionHistory.changes.split('/')
+	updatedContent = content.split('/')
+	print(changes, versionHistory, oldVersion)
+	for change in changes:
+		updatedContent = updateContent(updatedContent, change.split('-'))
+	return render(request, 'viewOldVersion.html', {
+		'user_id': str(request.user.id),
+		'owner_id': str(owner_id),
+		'title': title,
+		'doc_id': doc_id,
+		'latestVersion': latestVersion,
+		'viewingVersion': oldVersion,
+    	'content': updatedContent,
+    	'docHistory': docHistory,
+    })
+
+def updateContent(currentContent, changes):
+	#print(currentContent, changes)
+	op = changes[0]
+	text = changes[1]
+	lineNumber = int(changes[2])
+	if op == 'add':
+		firstHalf = currentContent[0:lineNumber-1]
+		secondHalf = currentContent[lineNumber-1:]
+		newContent = firstHalf + [text] + secondHalf
+		return newContent
+	elif op == 'delete':
+		newContent = currentContent
+		del newContent[lineNumber-1]
+		return newContent
+	elif op == 'update':
+		newContent = currentContent
+		newContent[lineNumber-1] = text
+		return newContent
+	else:
+		print("Invalid content operation!")
 
 def AddLine(request, doc_id):
 	####  Adds to the end of the file
@@ -85,15 +137,16 @@ def AddLine(request, doc_id):
 				prevVersion = doc.version
 			newContent = form.cleaned_data['newContent']
 			if oldContent == "":
+				lineToRemove = 1
 				updatedContent = newContent
 			else:
+				lineToRemove = len(oldContent.split('/')) + 1
 				updatedContent = oldContent + '/' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
-			lineToRemove = len(oldContent.split('/')) + 1
 			changes = 'delete-' + newContent + '-' + str(lineToRemove)
 			updateHistory(request, doc_id, changes, prevVersion)
-			return HttpResponseRedirect('/profile')
+			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = AddLineForm()
 	return render(request, 'addLine.html', {'form': form})
@@ -140,7 +193,7 @@ def DeleteLine(request, doc_id):
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			updateHistory(request, doc_id, changes, prevVersion)
-			return HttpResponseRedirect('/profile')
+			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = DeleteLineForm()
 	return render(request, 'deleteLine.html', {'form': form})
@@ -163,7 +216,7 @@ def UpdateLine(request, doc_id):
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			updateHistory(request, doc_id, changes, prevVersion)
-			return HttpResponseRedirect('/profile')
+			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = UpdateLineForm()
 	return render(request, 'updateLine.html', {'form': form})
