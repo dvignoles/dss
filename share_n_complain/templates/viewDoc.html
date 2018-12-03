@@ -15,6 +15,16 @@
         {% endif %}
       {% endifequal %}
     </div>
+    <div style="font-style: italic;">
+      {% if owner_id == user_id %}
+        {% if private %}
+          <p>Classification: Private</p>
+        {% endif %}
+        {% if not private %}
+          <p>Classification: Public</p>
+        {% endif %}
+      {% endif %}
+    </div>
     <div style="display: block;">
       <p>Version: {{ version }}</p>
       <p>View Previous Version: 
@@ -25,16 +35,6 @@
           {% endfor %}
         </select>
       </p>
-    </div>
-    <div>
-      {% if owner_id == user_id %}
-        {% if private %}
-          <p>Classification: Private</p>
-        {% endif %}
-        {% if not private %}
-          <p>Classification: Public</p>
-        {% endif %}
-      {% endif %}
     </div>
   </div>
     <ol style="border:solid; display:inline-block; padding:2em">

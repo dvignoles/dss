@@ -38,6 +38,16 @@
   <p><a href="{% url 'logout' %}">logout</a></p>
 {% else %}
   <p>You are a Guest User</p>
+  {% if user.is_authenticated %}
+    <p style="font-style: italic;">Ordinary User application pending...</p>
+  {% else %}
+    <p>
+      Apply to be an Orinary User:
+      <button>
+        <a href="{% url 'apply' %}" style="text-decoration:none;">Apply</a>
+      </button>
+    </p>
+  {% endif %}
   <div style="border:solid; display:inline-block; padding:1em; vertical-align: top; height: 20em; overflow-y: scroll;">
     <p style="font-weight:bold; text-decoration:underline;">Public Documents</p>
     {% for doc in publicDocs %}
@@ -46,11 +56,14 @@
       </p>
     {% endfor %}
   </div>
-  <p>
-  	Apply to be an Orinary User:
-  	<button>
-  		<a href="{% url 'apply' %}" style="text-decoration:none;">Apply</a>
-  	</button>
-  </p>
+  <div style="display: block;">
+    {% if user.is_authenticated %}
+      <p><a href="{% url 'logout' %}">logout</a></p>
+    {% else %}
+      <button>
+        <a href="{% url 'login' %}" style="text-decoration:none;">Login</a>
+      </button>
+    {% endif %}
+  </div>
 {% endif %}
 {% endblock %}
