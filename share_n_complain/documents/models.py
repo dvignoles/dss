@@ -9,6 +9,7 @@ class Document(models.Model):
 	content = models.CharField(max_length=10000, default='')
 	private = models.BooleanField('Classification', default=False)
 	version = models.IntegerField(default=1)
+	locked = models.BooleanField('Locked Status', default=False)
 	
 	def __str__(self):
 		doc = [self.owner, self.collaborators, self.content]

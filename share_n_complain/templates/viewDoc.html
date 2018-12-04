@@ -1,10 +1,17 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}View Doc{% endblock %}
 
 {% block content %}
 <div>
-  <div>
+  {% if is_collaborator or owner_id == user_id %}
+    {% if locked %}
+      <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
+    {% else %}
+      <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+    {% endif %}
+  {% endif %}
     <div style="display: inline-flex;">
       <h2 style="font-weight:bold; margin: auto;">{{ title }}</h2>
       {% ifequal user_id owner_id %}
@@ -45,7 +52,7 @@
       {% endfor %}
     </ol>
 </div>
-{% if user.is_OU %}
+{% if user.is_OU and locked %}
   {% if is_collaborator or owner_id == user_id %}
     <div style="margin-top: -1em; margin-bottom: 0.5em;">
       <button>
@@ -59,9 +66,9 @@
       </button>
     </div>
   {% endif %}
-  <button>
-    <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
-  </button>
-  <p><a href="{% url 'logout' %}">Logout</a></p>
 {% endif %}
+<button>
+  <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+</button>
+<p><a href="{% url 'logout' %}">Logout</a></p>
 {% endblock %}
