@@ -51,6 +51,15 @@ def CreateDoc(request):
         'form': form
     })
 
+def ChangeLockedStatus(request, doc_id):
+	docs = Document.objects.filter(id=doc_id)
+	for doc in docs:
+		if doc.locked:
+			Document.objects.filter(id=doc_id).update(locked=0)
+		else:
+			Document.objects.filter(id=doc_id).update(locked=1, locked_by=request.user.id)
+		return HttpResponseRedirect('/documents/view/' + doc_id)
+
 def ViewDoc(request, doc_id):
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
@@ -61,6 +70,13 @@ def ViewDoc(request, doc_id):
 		private = doc.private
 		collaborators = doc.collaborators
 		version = doc.version
+		locked = doc.locked
+		locked_by = doc.locked_by
+	try:
+		editor = CustomUser.objects.get(id=locked_by)
+	except:
+		editor = 'none'
+		print('Document has not been locked yet')
 	collaborators = collaborators.split('/')
 	if str(request.user.id) in collaborators:
 		is_collaborator = True
@@ -76,6 +92,9 @@ def ViewDoc(request, doc_id):
     	'is_collaborator': is_collaborator,
     	'version': version,
     	'docHistory': docHistory,
+    	'locked': locked,
+    	'locked_by': str(locked_by),
+    	'editor': editor,
     })
 
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
@@ -91,7 +110,6 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		versionHistory = vh
 	changes = versionHistory.changes.split('/')
 	updatedContent = content.split('/')
-	print(changes, versionHistory, oldVersion)
 	for change in changes:
 		updatedContent = updateContent(updatedContent, change.split('-'))
 	return render(request, 'viewOldVersion.html', {
@@ -236,7 +254,6 @@ def ShareDoc(request, doc_id):
 	if request.method == 'POST':
 		form = ShareDocForm(request.POST)
 		usernameSharedWith = request.POST.get('username-dropdown')
-		print(usernameSharedWith)
 		usersSharedWith = CustomUser.objects.filter(username=usernameSharedWith)
 		for user in usersSharedWith:
 			user_id = user.id

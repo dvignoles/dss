@@ -1,12 +1,27 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}View Doc{% endblock %}
 
 {% block content %}
 <div>
-  <div>
+  {% if is_collaborator or owner_id == user_id %}
+    {% if locked %}
+      {% if locked_by == user_id or owner_id == user_id %}
+        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
+      {% else %}
+        <img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
+      {% endif %}
+    {% else %}
+      {% if is_collaborator or owner_id == user_id %}
+        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+      {% else %}
+        <img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
+      {% endif %}
+    {% endif %}
+  {% endif %}
     <div style="display: inline-flex;">
-      <h2 style="font-weight:bold; margin: auto;">{{ title }}</h2>
+      <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
       {% ifequal user_id owner_id %}
         {% if not private %}
           <button style="margin-left: 1em;">
@@ -26,7 +41,6 @@
       {% endif %}
     </div>
     <div style="display: block;">
-      <p>Version: {{ version }}</p>
       <p>View Previous Version: 
         <select name="version" onchange="location = this.value">
           <option selected="selected"></option>
@@ -35,6 +49,9 @@
           {% endfor %}
         </select>
       </p>
+      {% if locked %}
+        <p style="font-style: italic;">{{ editor }} is updating the document...</p>
+      {% endif %}
     </div>
   </div>
     <ol class="doc_view">
@@ -45,23 +62,31 @@
       {% endfor %}
     </ol>
 </div>
-{% if user.is_OU %}
-  {% if is_collaborator or owner_id == user_id %}
-    <div style="margin-top: -1em; margin-bottom: 0.5em;">
-      <button>
-        <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
-      </button>
-      <button>
-        <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
-      </button>
-      <button>
-        <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
-      </button>
-    </div>
+<div style="display: block;">
+  {% if user.is_OU and locked %}
+    {% if locked_by == user_id or owner_id == user_id %}
+      <div style="margin-top: -1em; margin-bottom: 0.5em;">
+        <button>
+          <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+        </button>
+        <button>
+          <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+        </button>
+        <button>
+          <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
+        </button>
+      </div>
+    {% endif %}
   {% endif %}
-  <button>
-    <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
-  </button>
+  {% if user.is_OU %}
+    <button>
+      <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
+    </button>
+  {% else %}
+    <button>
+      <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+    </button>
+  {% endif %}
   <p><a href="{% url 'logout' %}">Logout</a></p>
-{% endif %}
+</div>
 {% endblock %}
