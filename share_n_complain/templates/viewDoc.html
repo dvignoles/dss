@@ -7,9 +7,17 @@
 <div>
   {% if is_collaborator or owner_id == user_id %}
     {% if locked %}
-      <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
+      {% if locked_by == user_id or owner_id == user_id %}
+        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
+      {% else %}
+        <img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
+      {% endif %}
     {% else %}
-      <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+      {% if is_collaborator or owner_id == user_id %}
+        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+      {% else %}
+        <img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
+      {% endif %}
     {% endif %}
   {% endif %}
     <div style="display: inline-flex;">
@@ -56,7 +64,7 @@
 </div>
 <div style="display: block;">
   {% if user.is_OU and locked %}
-    {% if is_collaborator or owner_id == user_id %}
+    {% if locked_by == user_id or owner_id == user_id %}
       <div style="margin-top: -1em; margin-bottom: 0.5em;">
         <button>
           <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
@@ -70,9 +78,15 @@
       </div>
     {% endif %}
   {% endif %}
-  <button>
-    <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
-  </button>
+  {% if user.is_OU %}
+    <button>
+      <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
+    </button>
+  {% else %}
+    <button>
+      <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+    </button>
+  {% endif %}
   <p><a href="{% url 'logout' %}">Logout</a></p>
 </div>
 {% endblock %}

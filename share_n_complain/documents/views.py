@@ -72,7 +72,11 @@ def ViewDoc(request, doc_id):
 		version = doc.version
 		locked = doc.locked
 		locked_by = doc.locked_by
-	editor = CustomUser.objects.get(id=locked_by)
+	try:
+		editor = CustomUser.objects.get(id=locked_by)
+	except:
+		editor = 'none'
+		print('Document has not been locked yet')
 	collaborators = collaborators.split('/')
 	if str(request.user.id) in collaborators:
 		is_collaborator = True
@@ -89,6 +93,7 @@ def ViewDoc(request, doc_id):
     	'version': version,
     	'docHistory': docHistory,
     	'locked': locked,
+    	'locked_by': str(locked_by),
     	'editor': editor,
     })
 
