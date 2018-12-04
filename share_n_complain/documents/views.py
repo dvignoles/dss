@@ -57,7 +57,7 @@ def ChangeLockedStatus(request, doc_id):
 		if doc.locked:
 			Document.objects.filter(id=doc_id).update(locked=0)
 		else:
-			Document.objects.filter(id=doc_id).update(locked=1)
+			Document.objects.filter(id=doc_id).update(locked=1, locked_by=request.user.id)
 		return HttpResponseRedirect('/documents/view/' + doc_id)
 
 def ViewDoc(request, doc_id):
@@ -71,6 +71,8 @@ def ViewDoc(request, doc_id):
 		collaborators = doc.collaborators
 		version = doc.version
 		locked = doc.locked
+		locked_by = doc.locked_by
+	editor = CustomUser.objects.get(id=locked_by)
 	collaborators = collaborators.split('/')
 	if str(request.user.id) in collaborators:
 		is_collaborator = True
@@ -87,6 +89,7 @@ def ViewDoc(request, doc_id):
     	'version': version,
     	'docHistory': docHistory,
     	'locked': locked,
+    	'editor': editor,
     })
 
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
