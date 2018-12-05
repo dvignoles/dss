@@ -9,14 +9,10 @@
     {% if locked %}
       {% if locked_by == user_id or owner_id == user_id %}
         <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
-      {% else %}
-        <img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
       {% endif %}
     {% else %}
       {% if is_collaborator or owner_id == user_id %}
         <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
-      {% else %}
-        <img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
       {% endif %}
     {% endif %}
   {% endif %}
