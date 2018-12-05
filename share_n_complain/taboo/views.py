@@ -4,6 +4,7 @@ from .forms import SuggestTabooForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
+from .models import TabooWord
 from users.models import CustomUser
 
 from users.views import getOuUsernames
@@ -27,3 +28,11 @@ def SuggestTaboo(request):
     return render(request, 'suggestTaboo.html', {
         'form': form
     })
+
+def getTabooList():
+    allTaboo = TabooWord.objects.all()
+    tabooList = []
+    for taboo in allTaboo:
+        if taboo.is_taboo:
+            tabooList.append(taboo.word)
+    return tabooList

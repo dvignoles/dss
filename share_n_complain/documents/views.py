@@ -9,8 +9,10 @@ from django.http import HttpResponseRedirect
 
 from documents.models import Document, History
 from users.models import CustomUser
+from taboo.models import TabooWord
 
 from users.views import getOuUsernames
+from taboo.views import getTabooList
 
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
@@ -72,6 +74,7 @@ def ViewDoc(request, doc_id):
 		version = doc.version
 		locked = doc.locked
 		locked_by = doc.locked_by
+	content = content.split('/')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
 	except:
@@ -82,19 +85,32 @@ def ViewDoc(request, doc_id):
 		is_collaborator = True
 	else:
 		is_collaborator = False
+	tabooList = getTabooList()
+	for index, value in enumerate(content):
+		if value in tabooList:
+			hasTaboo = True
+			tabooIndex = index
+			break
+		else:
+			hasTaboo = False
+			tabooIndex = None
+	Document.objects.filter(id=doc_id).update(taboo_index=tabooIndex)
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
 		'title': title,
 		'private': private,
 		'doc_id': doc_id,
-    	'content': content.split('/'),
+    	'content': content,
     	'is_collaborator': is_collaborator,
     	'version': version,
     	'docHistory': docHistory,
     	'locked': locked,
     	'locked_by': str(locked_by),
     	'editor': editor,
+    	'tabooList': tabooList,
+    	'hasTaboo': hasTaboo,
+    	'tabooIndex': tabooIndex,
     })
 
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
@@ -143,6 +159,29 @@ def updateContent(currentContent, changes):
 		return newContent
 	else:
 		print("Invalid content operation!")
+
+def FixTaboo(request, doc_id):
+	####  Adds to the end of the file
+	if request.method == 'POST':
+		form = AddLineForm(request.POST)
+		if form.is_valid():
+			docs = Document.objects.filter(id=doc_id)
+			for doc in docs:
+				oldContent = doc.content
+				prevVersion = doc.version
+				tabooIndex = doc.taboo_index
+			newContent = form.cleaned_data['newContent']
+			oldContent = oldContent.split('/')
+			changes = 'update-' + oldContent[tabooIndex] + '-' + str(tabooIndex+1)
+			oldContent[tabooIndex] = newContent
+			updatedContent = '/'.join(oldContent)
+			Document.objects.filter(id=doc_id).update(content=updatedContent)
+			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			updateHistory(request, doc_id, changes, prevVersion)
+			return HttpResponseRedirect('/documents/view/' + doc_id)
+	else:
+		form = AddLineForm()
+	return render(request, 'addLine.html', {'form': form})
 
 def AddLine(request, doc_id):
 	####  Adds to the end of the file

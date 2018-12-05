@@ -11,7 +11,8 @@ class Document(models.Model):
 	version = models.IntegerField(default=1)
 	locked = models.BooleanField('Locked Status', default=False)
 	locked_by = models.IntegerField(blank=True, null=True)
-	
+	taboo_index = models.IntegerField(blank=True, null=True)
+
 	def __str__(self):
 		doc = [self.owner, self.collaborators, self.content]
 		return doc
