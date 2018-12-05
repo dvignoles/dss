@@ -3,8 +3,8 @@ from users.models import CustomUser
 
 # Create your models here.
 class TabooWord(models.Model):
+	suggested_by = models.CharField(default='', max_length=100)
 	word = models.CharField(max_length=100, default='')
-	suggested_by = models.ForeignKey(CustomUser, null=False, on_delete=models.CASCADE)
 	is_taboo = models.BooleanField('Taboo Status', default=False)
 	
 	def __str__(self):
