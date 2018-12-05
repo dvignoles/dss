@@ -7,7 +7,7 @@ from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLine
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
-from documents.models import Document, History
+from documents.models import Document, History, Complaints
 from users.models import CustomUser
 
 from users.views import getOuUsernames
@@ -233,6 +233,8 @@ def UpdateLine(request, doc_id):
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+
+			
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
