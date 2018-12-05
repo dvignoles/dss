@@ -25,3 +25,19 @@ class History(models.Model):
 	def __str__(self):
 		history = 'doc id: ' + str(self.doc_id) + ' - version: ' + str(self.version)
 		return history
+
+#UNDER CONSTRUCTION
+# class Complaints(models.Model):
+# 	#Document Details
+# 	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
+# 	line_number_choices = (,) #TODO: Populate with ('1','1'), ('2',2') etc. based on number of lines in doc
+
+# 	line_number = models.IntegerField(choices=line_number_choices)
+
+# 	#User Details
+# 	accused = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+
+
+
+	
