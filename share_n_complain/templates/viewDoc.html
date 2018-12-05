@@ -69,9 +69,15 @@
 {% endif %}
 <ol class="doc_view">
   {% for c in content %}
-  	<li style="padding-left: 0.5em;">
-      {{ c }}
-    </li>
+    {% if c in tabooList %}
+    	<li style="padding-left: 0.5em; background-color: red;">
+        {{ c }}
+      </li>
+    {% else %}
+      <li style="padding-left: 0.5em;">
+        {{ c }}
+      </li>
+    {% endif %}
   {% endfor %}
 </ol>
 <div style="float: none; display: inline-block;">

@@ -9,8 +9,10 @@ from django.http import HttpResponseRedirect
 
 from documents.models import Document, History
 from users.models import CustomUser
+from taboo.models import TabooWord
 
 from users.views import getOuUsernames
+from taboo.views import getTabooList
 
 # class CreateDoc(generic.CreateView):
 # 	form_class = DocumentCreationForm
@@ -82,6 +84,7 @@ def ViewDoc(request, doc_id):
 		is_collaborator = True
 	else:
 		is_collaborator = False
+	tabooList = getTabooList()
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
@@ -95,6 +98,7 @@ def ViewDoc(request, doc_id):
     	'locked': locked,
     	'locked_by': str(locked_by),
     	'editor': editor,
+    	'tabooList': tabooList,
     })
 
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
