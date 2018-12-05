@@ -52,7 +52,15 @@
       {% endif %}
     </div>
 </div>
-{% if user.is_OU and locked %}
+{% if hasTaboo %}
+  <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
+    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL TABOO WORDS BEOFRE CONTINUING!</p>
+    <button>
+      <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Fix Taboo Words</a>
+    </button>
+  </div>
+{% endif %}
+{% if user.is_OU and locked and not hasTaboo %}
   {% if locked_by == user_id or owner_id == user_id %}
     <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
       <button>
@@ -71,7 +79,7 @@
   {% for c in content %}
     {% if c in tabooList %}
     	<li style="padding-left: 0.5em; background-color: red;">
-        {{ c }}
+        UNK
       </li>
     {% else %}
       <li style="padding-left: 0.5em;">

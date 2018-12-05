@@ -74,6 +74,7 @@ def ViewDoc(request, doc_id):
 		version = doc.version
 		locked = doc.locked
 		locked_by = doc.locked_by
+	content = content.split('/')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
 	except:
@@ -85,13 +86,19 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
+	for c in content:
+		if c in tabooList:
+			hasTaboo = True
+			break
+		else:
+			hasTaboo = False
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
 		'title': title,
 		'private': private,
 		'doc_id': doc_id,
-    	'content': content.split('/'),
+    	'content': content,
     	'is_collaborator': is_collaborator,
     	'version': version,
     	'docHistory': docHistory,
@@ -99,6 +106,7 @@ def ViewDoc(request, doc_id):
     	'locked_by': str(locked_by),
     	'editor': editor,
     	'tabooList': tabooList,
+    	'hasTaboo': hasTaboo,
     })
 
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
