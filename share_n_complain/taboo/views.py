@@ -15,10 +15,10 @@ def SuggestTaboo(request):
         form = SuggestTabooForm(request.POST)
         if form.is_valid():
             tabooWord = form.save(commit=False)
-            if request.user:
-            	tabooWord.suggested_by = request.user.username
+            if request.user.is_anonymous:
+                tabooWord.suggested_by = "Guest"
             else:
-            	tabooWord.suggested_by = None
+            	tabooWord.suggested_by = request.user.username
             tabooWord.save()
             #return HttpResponse('Your document ' + doc.title + ' was saved!')
             #return render(request, 'profile.html')
