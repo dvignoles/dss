@@ -24,6 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('documents/', include('documents.urls')),
+    path('taboo/', include('taboo.urls')),
     path('', include('django.contrib.auth.urls')),
     #path('profile/', TemplateView.as_view(template_name='profile.html'), name='profile'),
     path('profile/', views.Profile, name='profile'),
