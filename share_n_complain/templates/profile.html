@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Profile{% endblock %}
 
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
+  <div>
+  <div id="pro_pic">
+  	<img src="{% static 'img/' %}{{user.prof_pic_num}}.png"/>
+  </div>
+  <div>
   <h2 style="font-weight:bold">{{ user.username }}'s Profile Page</h2>
   <p>Interests: {{ interests }}</p>
   <p>
@@ -11,6 +17,8 @@
 		<a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
 	  </button>
   </p>
+  </div>
+  </div>
   <div class="doc_list">
 	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
 	  {% for doc in myDocs %}
