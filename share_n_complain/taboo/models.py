@@ -8,5 +8,4 @@ class TabooWord(models.Model):
 	is_taboo = models.BooleanField('Taboo Status', default=False)
 	
 	def __str__(self):
-		taboo_word = [self.word, self.suggested_by, self.is_taboo]
-		return taboo_word
+		return self.word
