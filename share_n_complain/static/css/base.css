@@ -35,3 +35,7 @@ main {
 	text-align: left;
 	margin-bottom: 2em;
 }
+
+.pro_pic {
+	position: relative;
+}

@@ -9,14 +9,10 @@
     {% if locked %}
       {% if locked_by == user_id or owner_id == user_id %}
         <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
-      {% else %}
-        <img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
       {% endif %}
     {% else %}
       {% if is_collaborator or owner_id == user_id %}
         <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
-      {% else %}
-        <img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
       {% endif %}
     {% endif %}
   {% endif %}
@@ -24,13 +20,13 @@
       <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
       {% ifequal user_id owner_id %}
         {% if not private %}
-          <button style="margin-left: 1em;">
+          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
             <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
           </button>
         {% endif %}
       {% endifequal %}
     </div>
-    <div style="font-style: italic;">
+    <div style="font-style: italic; margin-bottom: -1em;">
       {% if owner_id == user_id %}
         {% if private %}
           <p>Classification: Private</p>
@@ -40,7 +36,7 @@
         {% endif %}
       {% endif %}
     </div>
-    <div style="display: block;">
+    <div style="display: inline-block; float: none;">
       <p>View Previous Version: 
         <select name="version" onchange="location = this.value">
           <option selected="selected"></option>
@@ -50,36 +46,52 @@
         </select>
       </p>
       {% if locked %}
-        <p style="font-style: italic;">{{ editor }} is updating the document...</p>
+        <div style="display: flex; text-align: center; margin-top: -1em;">
+          <p style="font-style: italic; font-weight: bold;">{{ editor }}</p><p style="font-style: italic;">&nbsp;is updating the document...</p>
+        </div>
       {% endif %}
     </div>
-  </div>
-    <ol class="doc_view">
-      {% for c in content %}
-      	<li style="padding-left: 0.5em;">
-          {{ c }}
-        </li>
-      {% endfor %}
-    </ol>
 </div>
-<div style="display: block;">
-  {% if user.is_OU and locked %}
-    {% if locked_by == user_id or owner_id == user_id %}
-      <div style="margin-top: -1em; margin-bottom: 0.5em;">
-        <button>
-          <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
-        </button>
-        <button>
-          <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
-        </button>
-        <button>
-          <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
-        </button>
-      </div>
-    {% endif %}
-  {% endif %}
-  {% if user.is_OU %}
+{% if hasTaboo %}
+  <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
+    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL TABOO WORDS BEOFRE CONTINUING!</p>
     <button>
+      <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ tabooIndex|add:1 }}</a>
+    </button>
+  </div>
+{% endif %}
+{% if user.is_OU and locked and not hasTaboo %}
+  {% if locked_by == user_id or owner_id == user_id %}
+    <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
+      <button>
+        <a href={% url 'addLine' doc_id=doc_id %} style="text-decoration:none;">Add Line</a>
+      </button>
+      <button>
+        <a href={% url 'deleteLine' doc_id=doc_id %} style="text-decoration:none;">Delete Line</a>
+      </button>
+      <button>
+        <a href={% url 'updateLine' doc_id=doc_id %} style="text-decoration:none;">Update Line</a>
+      </button>
+    </div>
+  {% endif %}
+{% endif %}
+<ol class="doc_view">
+  {% for c in content %}
+    {% if c in tabooList %}
+    	<li style="padding-left: 0.5em; background-color: red;">
+        UNK
+      </li>
+    {% else %}
+      <li style="padding-left: 0.5em;">
+        {{ c }}
+      </li>
+    {% endif %}
+  {% endfor %}
+</ol>
+<div style="float: none; display: inline-block;">
+<div style="display: flex; text-align: center; margin-top: 0em;">
+  {% if user.is_OU %}
+    <button style="height: 100%; margin: auto 0 auto 0;">
       <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
     </button>
   {% else %}
@@ -87,6 +99,7 @@
       <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
     </button>
   {% endif %}
-  <p><a href="{% url 'logout' %}">Logout</a></p>
+  <p style="margin: auto 0 auto 1em;"><a href="{% url 'logout' %}">Logout</a></p>
+</div>
 </div>
 {% endblock %}
