@@ -15,14 +15,14 @@ class Document(models.Model):
 	collaborators = models.CharField(max_length=100, default='')
 	title = models.CharField(max_length=100, default='')
 	content = models.CharField(max_length=10000, default='')
-	private = models.BooleanField('Classification', default=False)
+	private = models.BooleanField('Private?', default=False)
 	version = models.IntegerField(default=1)
 	locked = models.BooleanField('Locked Status', default=False)
 	locked_by = models.IntegerField(blank=True, null=True)
 	taboo_index = models.IntegerField(blank=True, null=True)
 
 	def __str__(self):
-		doc = [self.owner, self.collaborators, self.content]
+		doc = 'owner: ' + str(self.owner) + 'collaborators: ' + self.collaborators + 'content: ' + self.content
 		return doc
 
 class History(models.Model):
