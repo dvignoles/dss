@@ -9,12 +9,8 @@ class Document(models.Model):
 	title = models.CharField(max_length=100, default='')
 	content = models.CharField(max_length=10000, default='')
 
-	#TODO: implement in views
-	line_editors = models.CharField(default='')
-
 	private = models.BooleanField('Classification', default=False)
 	version = models.IntegerField(default=1)
-
 	locked = models.BooleanField('Locked Status', default=False)
 	locked_by = models.IntegerField(blank=True, null=True)
 	
@@ -35,12 +31,13 @@ class History(models.Model):
 class Complaints(models.Model):
 	#Document Details
 	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
-	line_number_choices = (,) #TODO: Populate with ('1','1'), ('2',2') etc. based on number of lines in doc
-
-	line_number = models.IntegerField(choices=line_number_choices)
 
 	#User Details
-	accused = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	complainer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='complaint_complainer')
+	accused = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='complaint_accused')
+
+	#Text Field
+	message = models.CharField(max_length=250, default='')
 
 
 

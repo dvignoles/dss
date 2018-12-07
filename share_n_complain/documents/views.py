@@ -7,7 +7,7 @@ from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLine
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
-from documents.models import Document, History, Complaints
+from documents.models import Document, History
 from users.models import CustomUser
 
 from users.views import getOuUsernames
@@ -278,3 +278,5 @@ def ShareDoc(request, doc_id):
 	return render(request, 'shareDoc.html', {
 		'usernames': usernames,
 		})
+
+# def Complain(request, doc_id, accused):
