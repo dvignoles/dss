@@ -1,7 +1,15 @@
+#### Models for database creation
+#### Each Class is a model, each model has attributes which correspond to fields in the database
+#### 	Update database with changes made to this file using 'python3 manage.py makemigrations' followed by 
+####	'python3 manage.py migrate' on the command line.
+#### Any time data from a model is needed during computations (updating content in a document, creating a document, etc.), 
+#### 	models from this file must be imported at the top of that file
+#### 	i.e. 'from app_name.models import ModelName'
+
 from django.db import models
 from users.models import CustomUser
 
-# Create your models here.
+
 class Document(models.Model):
 	owner = models.ForeignKey(CustomUser, null=False, on_delete=models.CASCADE)
 	collaborators = models.CharField(max_length=100, default='')

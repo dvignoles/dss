@@ -1,27 +1,16 @@
+#### Forms for various user input
+####	i.e. document edits (add, delete, update) and sharing
+#### Linked to from documents/views.py (AddLine, DeleteLine, UpdateLine, and ShareDoc functions)
+
 from django import forms
 from .models import Document
 
+# Renders a form with fields which correspond to attributes 'title' and 'private' inherited from the Document model
 class DocumentCreationForm(forms.ModelForm):
 	private = forms.BooleanField(label='Private?', required=False)
 	class Meta:
 		model = Document
 		fields = ('title','private')
-
-	# def __init__(self, *args, **kwargs):
-	# 	super(DocumentCreationForm, self).__init__(*args, **kwargs)
-	# 	self.fields['owner'].initial = self.owner_id
-
-# class DocumentCreationForm(forms.ModelForm):
-# 	class Meta:
-# 		model = Document
-# 		fields = ('content', 'owner')
-
-# 	def __init__(self, *args, **kwargs):
-# 	    request = kwargs.pop('request')
-# 	    super(DocumentCreationForm, self).__init__(*args, **kwargs)
-# 	    self.fields['owner'].initial = request.user.id
-# 	    #self.save()
-# #	    print(request.user.id)
 
 class AddLineForm(forms.Form):
 	####  Adds to a specific line number
