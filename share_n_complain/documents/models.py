@@ -18,6 +18,17 @@ class Document(models.Model):
 	content = models.CharField(max_length=10000, default='')
 	private = models.BooleanField('Private?', default=False)
 	version = models.IntegerField(default=1)
+
+
+
+
+	#ID of CustomUser who saved current document version
+	updater_id = models.IntegerField(blank=True, null=True,default=0)
+
+
+
+
+
 	locked = models.BooleanField('Locked Status', default=False)
 	locked_by = models.IntegerField(blank=True, null=True)
 	taboo_index = models.IntegerField(blank=True, null=True)

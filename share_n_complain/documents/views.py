@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm
+from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm, ComplaintForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
@@ -27,6 +27,7 @@ def CreateDoc(request):
         if form.is_valid():
             doc = form.save(commit=False)
             doc.owner = request.user
+			
             doc.save()
             return HttpResponseRedirect('/profile')
     else:
@@ -80,6 +81,15 @@ def ViewDoc(request, doc_id):
 			hasTaboo = False
 			tabooIndex = None
 	Document.objects.filter(id=doc_id).update(taboo_index=tabooIndex)
+
+	#ID of last persion to update document
+	updater_id = Document.objects.get(id=doc_id).updater_id
+
+	if(updater_id != 0):
+		updater_name = CustomUser.objects.get(id=updater_id).username
+	else:
+		updater_name = 'NA'
+
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'owner_id': str(owner_id),
@@ -96,6 +106,8 @@ def ViewDoc(request, doc_id):
     	'tabooList': tabooList,
     	'hasTaboo': hasTaboo,
     	'tabooIndex': tabooIndex,
+		'updater_id' : updater_id,
+		'updater_name': updater_name
     })
 
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
@@ -109,6 +121,12 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		latestVersion = doc.version
 	docHistory = History.objects.filter(doc_id=doc_id)
 	versionHistory = History.objects.filter(doc_id=doc_id, version=oldVersion)
+
+	#Get Updater Username for this Version History
+	versionHistoryEntry = versionHistory[0]
+	versionUpdaterId= versionHistoryEntry.updater_ids[-1]
+	versionUpdaterName = CustomUser.objects.get(id=versionUpdaterId).username
+
 	for vh in versionHistory:
 		versionHistory = vh
 	changes = versionHistory.changes.split('/')
@@ -124,6 +142,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		'viewingVersion': oldVersion,
     	'content': updatedContent,
     	'docHistory': docHistory,
+		'updater':versionUpdaterName
     })
 
 # Helper function for rolling back document content to previous version
@@ -192,6 +211,10 @@ def AddLine(request, doc_id):
 				updatedContent = oldContent + '/' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+
 			changes = 'delete-' + newContent + '-' + str(lineToRemove)
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
@@ -316,4 +339,5 @@ def ShareDoc(request, doc_id):
 		'usernames': usernames,
 		})
 
-# def Complain(request, doc_id, accused):
+def Complain(request, doc_id):
+	return HttpResponse("Complaints View!")
