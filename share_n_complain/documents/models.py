@@ -50,13 +50,11 @@ class History(models.Model):
 class Complaints(models.Model):
 	#Document Details
 	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
+	version = models.IntegerField(null=True)
 
 	#User Details
-	complainer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='complaint_complainer')
-	accused = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='complaint_accused')
-
-	#Text Field
-	message = models.CharField(max_length=250, default='')
+	complainer = models.IntegerField(null=True)
+	accused = models.IntegerField(null=True)
 
 
 

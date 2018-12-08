@@ -8,11 +8,11 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 
-from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm, ComplaintForm
+from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
-from documents.models import Document, History
+from documents.models import Document, History, Complaints
 from users.models import CustomUser
 from taboo.models import TabooWord
 
@@ -47,8 +47,25 @@ def ChangeLockedStatus(request, doc_id):
 			Document.objects.filter(id=doc_id).update(locked=1, locked_by=request.user.id)
 		return HttpResponseRedirect('/documents/view/' + doc_id)
 
+#save relevant doc information in current session
+def doc_session_set(request, doc_id, old_version, version_id = -1):
+	request.session['current_doc'] = doc_id
+	this_doc = Document.objects.get(id=doc_id)
+	request.session['current_doc_owner'] = this_doc.owner.id
+
+	if old_version == False:
+		request.session['current_doc_version'] = this_doc.version
+		request.session['current_doc_last_updater'] = this_doc.updater_id
+	else:
+		request.session['current_doc_version'] = version_id
+		versionHistory = History.objects.get(doc_id=doc_id, version=version_id)
+		versionUpdaterId= versionHistory.updater_ids[-1]
+		request.session['current_doc_last_updater'] = versionUpdaterId
+		
 # Passes information about a specific document, the taboo list, and the document's history into templates/viewDoc.html
 def ViewDoc(request, doc_id):
+	doc_session_set(request, doc_id,old_version=False)
+
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
@@ -113,6 +130,8 @@ def ViewDoc(request, doc_id):
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
 # 	the helper function updateContent() below.
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
+	doc_session_set(request,doc_id,old_version=True,version_id=oldVersion)
+	
 	docs = Document.objects.filter(id=doc_id)
 	for doc in docs:
 		owner_id = doc.owner_id
@@ -142,6 +161,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		'viewingVersion': oldVersion,
     	'content': updatedContent,
     	'docHistory': docHistory,
+		'updater_id':versionUpdaterId,
 		'updater':versionUpdaterName
     })
 
@@ -340,4 +360,14 @@ def ShareDoc(request, doc_id):
 		})
 
 def Complain(request, doc_id):
-	return HttpResponse("Complaints View!")
+	complainer = request.user.id
+	doc = Document.objects.get(id=request.session['current_doc'])
+	version = request.session['current_doc_version']
+	accused = request.session['current_doc_last_updater']
+
+	c = Complaints(doc=doc,version=version,complainer=complainer,accused=accused)
+	c.save()
+
+	request.session.flush()
+	context = {}
+	return render(request,'complain.html', context)

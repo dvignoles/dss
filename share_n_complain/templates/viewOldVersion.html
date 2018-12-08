@@ -9,6 +9,18 @@
       <h2 style="font-weight:bold;">{{ title }}</h2>
       <p>Version: {{ viewingVersion }}</p>
       <p>Updater: {{ updater }}</p>
+
+
+
+      {%if updater_id != 0 %}
+      <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
+        <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
+      </button>
+      {% endif %}
+
+
+
+
     </div>
   </div>
     <ol class="doc_view">

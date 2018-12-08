@@ -26,8 +26,3 @@ class UpdateLineForm(forms.Form):
 
 class ShareDocForm(forms.Form):
 	shareWith = forms.CharField(label='Share with', max_length=100)
-
-class ComplaintForm(forms.ModelForm):
-	class Meta:
-		model = Complaints
-		fields = ('message',)
