@@ -10,6 +10,7 @@ from documents.models import CustomUser
 
 def Profile(request):	
 	searchQuery = request.GET.get('search_box', '/')  #gets search string from profile page
+	userSearchQuery = request.GET.get('user_search_box', '') #gets user search string from profile page
 
 	# finds all docs that contain the search query
 	docsContainingSearchQuery = []
@@ -21,6 +22,24 @@ def Profile(request):
 			if searchQuery in word:
 				docsContainingSearchQuery.append(doc.id)
 				break
+
+	# finds users who's username and/or interests match user search query
+	userMatches = []
+	if userSearchQuery != "":
+		allOUs = CustomUser.objects.filter(is_OU=True)
+		for user in allOUs:
+			username = user.username
+			interests = user.interests
+			if userSearchQuery in username:
+				userMatches.append({
+					'username': username,
+					'interests': interests,
+				})
+			elif userSearchQuery in interests:
+				userMatches.append({
+					'username': username,
+					'interests': interests,
+				})
 
 	if request.user.is_authenticated:
 		my_id = str(request.user.id)
@@ -42,6 +61,7 @@ def Profile(request):
 	    	'publicDocs': publicDocs,
 	    	'interests': interests,
 	    	'docsContainingSearchQuery': docsContainingSearchQuery,
+	    	'userMatches': userMatches,
 	    })
 	else:
 		my_id = str(request.user.id)
@@ -59,6 +79,7 @@ def Profile(request):
 	    	'sharedDocs': sharedDocs,
 	    	'publicDocs': publicDocs,
 	    	'docsContainingSearchQuery': docsContainingSearchQuery,
+	    	'userMatches': userMatches,
 	    })
 
 def Home(request):
