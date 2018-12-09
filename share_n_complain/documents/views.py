@@ -48,6 +48,7 @@ def ChangeLockedStatus(request, doc_id):
 
 # Passes information about a specific document, the taboo list, and the document's history into templates/viewDoc.html
 def ViewDoc(request, doc_id):
+	searchQuery = request.GET.get('search_box')  # gets search query from search box
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
@@ -96,6 +97,7 @@ def ViewDoc(request, doc_id):
     	'tabooList': tabooList,
     	'hasTaboo': hasTaboo,
     	'tabooIndex': tabooIndex,
+    	'searchQuery': searchQuery,
     })
 
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
