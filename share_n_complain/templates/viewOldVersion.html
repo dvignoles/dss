@@ -8,6 +8,18 @@
     <div style="display: block;">
       <h2 style="font-weight:bold;">{{ title }}</h2>
       <p>Version: {{ viewingVersion }}</p>
+      <p>Updater: {{ updater }}</p>
+      
+      <div>
+        {% if is_OU %}
+          {% if owner_id != user_id %}
+            <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
+              <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
+            </button>
+          {% endif %}
+        {% endif %}
+       </div>
+
     </div>
   </div>
     <ol class="doc_view">

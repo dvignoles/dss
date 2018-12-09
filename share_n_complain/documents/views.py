@@ -11,31 +11,35 @@ from django.views import generic
 from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 
-from documents.models import Document, History
+from documents.models import Document, History, Complaints
 from users.models import CustomUser
 from taboo.models import TabooWord
 
 from users.views import getOuUsernames
 from taboo.views import getTabooList
 
+from share_n_complain.views import Profile
+
 
 
 
 # Creates a document by passing the DocumentCreationForm (located in documents/forms.py) into templates/createDoc.html 
 def CreateDoc(request):
-    if request.method == 'POST':
-        form = DocumentCreationForm(request.POST)
-        if form.is_valid():
-            doc = form.save(commit=False)
-            doc.owner = request.user
-            doc.save()
-            return HttpResponseRedirect('/profile')
-    else:
-        form = DocumentCreationForm()
-    return render(request, 'createDoc.html', {
-        'form': form
-    })
+	if request.method == 'POST':
+		form = DocumentCreationForm(request.POST)
+		if form.is_valid():
+			doc = form.save(commit=False)
+			doc.owner = request.user
+			doc.updater_id = request.user.id
+			doc.save()
+			return HttpResponseRedirect('/profile')
+	else:
+		form = DocumentCreationForm()
+	return render(request, 'createDoc.html', {
+		'form': form
+	})
 
 # When the user locks/unlocks a document, this function updates that document's 'locked' and 'locked_by' attributes in the database,
 # 	and then returns the user to the document via documents/view/doc_id.
@@ -48,8 +52,36 @@ def ChangeLockedStatus(request, doc_id):
 			Document.objects.filter(id=doc_id).update(locked=1, locked_by=request.user.id)
 		return HttpResponseRedirect('/documents/view/' + doc_id)
 
+#save relevant doc information in current session
+def doc_session_set(request, doc_id, old_version, version_id = -1):
+	request.session['current_doc'] = doc_id
+	this_doc = Document.objects.get(id=doc_id)
+	request.session['current_doc_owner'] = this_doc.owner.id
+
+	if old_version == False:
+		request.session['current_doc_version'] = this_doc.version
+		request.session['current_doc_last_updater'] = this_doc.updater_id
+	else:
+		request.session['current_doc_version'] = version_id
+		versionHistory = History.objects.get(doc_id=doc_id, version=version_id)
+		versionUpdaterId= versionHistory.updater_ids[-1]
+		request.session['current_doc_last_updater'] = versionUpdaterId
+
+def getComplaints(doc_id):
+	complaints = Complaints.objects.filter(doc_id = doc_id)
+	readable_complaints = []
+	for comp in complaints:
+		complaint_id = comp.id
+		complainer = CustomUser.objects.get(id=comp.complainer).username
+		accused = CustomUser.objects.get(id=comp.accused).username
+		version = comp.version
+		readable_complaints.append((complaint_id,complainer,accused,version))
+	return(readable_complaints)
+		
 # Passes information about a specific document, the taboo list, and the document's history into templates/viewDoc.html
 def ViewDoc(request, doc_id):
+	doc_session_set(request, doc_id,old_version=False)
+
 	searchQuery = request.GET.get('search_box')  # gets search query from search box
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
@@ -65,6 +97,7 @@ def ViewDoc(request, doc_id):
 	content = content.split('/')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
+		
 	except:
 		editor = 'none'
 		print('Document has not been locked yet')
@@ -83,8 +116,23 @@ def ViewDoc(request, doc_id):
 			hasTaboo = False
 			tabooIndex = None
 	Document.objects.filter(id=doc_id).update(taboo_index=tabooIndex)
+
+	#ID of last persion to update document
+	updater_id = Document.objects.get(id=doc_id).updater_id
+
+	if(updater_id != 0):
+		updater_name = CustomUser.objects.get(id=updater_id).username
+	else:
+		updater_name = 'NA'
+
+
+	is_OU = request.user.is_OU
+
+	complaints = getComplaints(doc_id)
+
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
+		'is_OU':is_OU,
 		'owner_id': str(owner_id),
 		'title': title,
 		'private': private,
@@ -99,12 +147,47 @@ def ViewDoc(request, doc_id):
     	'tabooList': tabooList,
     	'hasTaboo': hasTaboo,
     	'tabooIndex': tabooIndex,
+		'updater_id' : updater_id,
+		'updater_name': updater_name,
+		'complaints': complaints,
     	'searchQuery': searchQuery,
     })
+def Complaint_Dismiss(request, comp_id):
+	comp = Complaints.objects.get(id=comp_id)
+	comp.delete()
+	#return HttpResponse('Complaint: ' + str(comp_id) + ' Deleted')
+	return redirect(Profile)
+
+def Complaint_Remove_User(request, comp_id):
+	comp = Complaints.objects.get(id=comp_id)
+	doc_id = comp.doc_id
+	user = comp.accused
+
+	doc = Document.objects.get(id=doc_id)
+	collab = doc.collaborators
+	collab = collab.split('/')
+	
+	def remove_values_from_list(the_list, val):
+		return [value for value in the_list if value != val]
+
+	collab = remove_values_from_list(collab,str(user))
+	collab = '/'.join(collab)
+
+	doc.collaborators = collab
+
+	#Unlock Doc if locked by Removed Collaborator
+	if doc.locked == False and doc.locked_by == user:
+		doc.locked = 0
+		doc.locked_by = None
+
+	doc.save()
+	return redirect(Profile)
 
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
 # 	the helper function updateContent() below.
 def ViewOldVersion(request, doc_id, delimiter, oldVersion):
+	doc_session_set(request,doc_id,old_version=True,version_id=oldVersion)
+	
 	docs = Document.objects.filter(id=doc_id)
 	for doc in docs:
 		owner_id = doc.owner_id
@@ -113,6 +196,12 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		latestVersion = doc.version
 	docHistory = History.objects.filter(doc_id=doc_id)
 	versionHistory = History.objects.filter(doc_id=doc_id, version=oldVersion)
+
+	#Get Updater Username for this Version History
+	versionHistoryEntry = versionHistory[0]
+	versionUpdaterId= versionHistoryEntry.updater_ids[-1]
+	versionUpdaterName = CustomUser.objects.get(id=versionUpdaterId).username
+
 	for vh in versionHistory:
 		versionHistory = vh
 	changes = versionHistory.changes.split('/')
@@ -121,6 +210,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		updatedContent = updateContent(updatedContent, change.split('-'))
 	return render(request, 'viewOldVersion.html', {
 		'user_id': str(request.user.id),
+		'is_OU': request.user.is_OU,
 		'owner_id': str(owner_id),
 		'title': title,
 		'doc_id': doc_id,
@@ -128,6 +218,8 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		'viewingVersion': oldVersion,
     	'content': updatedContent,
     	'docHistory': docHistory,
+		'updater_id':versionUpdaterId,
+		'updater':versionUpdaterName
     })
 
 # Helper function for rolling back document content to previous version
@@ -196,6 +288,10 @@ def AddLine(request, doc_id):
 				updatedContent = oldContent + '/' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+
 			changes = 'delete-' + newContent + '-' + str(lineToRemove)
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
@@ -245,6 +341,12 @@ def DeleteLine(request, doc_id):
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+
+
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+
+
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
@@ -270,6 +372,9 @@ def UpdateLine(request, doc_id):
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+			
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
@@ -334,3 +439,16 @@ def ShareDoc(request, doc_id):
 	return render(request, 'shareDoc.html', {
 		'usernames': usernames,
 		})
+
+def Complain(request, doc_id):
+	complainer = request.user.id
+	doc = Document.objects.get(id=request.session['current_doc'])
+	version = request.session['current_doc_version']
+	accused = request.session['current_doc_last_updater']
+
+	c = Complaints(doc=doc,version=version,complainer=complainer,accused=accused)
+	c.save()
+
+	request.session.flush()
+	context = {}
+	return render(request,'complain.html', context)

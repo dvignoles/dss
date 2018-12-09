@@ -3,7 +3,7 @@
 #### Linked to from documents/views.py (AddLine, DeleteLine, UpdateLine, and ShareDoc functions)
 
 from django import forms
-from .models import Document
+from .models import Document, Complaints
 
 # Renders a form with fields which correspond to attributes 'title' and 'private' inherited from the Document model
 class DocumentCreationForm(forms.ModelForm):

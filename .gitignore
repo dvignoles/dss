@@ -113,6 +113,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.vscode/my_workspace.code-workspace
+.vscode/settings.json
 
 .vscode/
 /.vscode

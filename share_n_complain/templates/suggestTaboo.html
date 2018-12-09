@@ -4,7 +4,7 @@
 
 {% block content %}
   <h2>Taboo Word Suggestion</h2>
-  <form method="post" action="">
+  <form method="post" action="" autocomplete="off">
     {% csrf_token %}
     {{ form.as_p }}
     <button type="submit">Suggest</button>
