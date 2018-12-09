@@ -11,6 +11,7 @@ from django.views import generic
 from .forms import DocumentCreationForm, AddLineForm, DeleteLineForm, UpdateLineForm, ShareDocForm
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 
 from documents.models import Document, History, Complaints
 from users.models import CustomUser
@@ -18,6 +19,8 @@ from taboo.models import TabooWord
 
 from users.views import getOuUsernames
 from taboo.views import getTabooList
+
+from share_n_complain.views import Profile
 
 
 # Creates a document by passing the DocumentCreationForm (located in documents/forms.py) into templates/createDoc.html 
@@ -66,10 +69,11 @@ def getComplaints(doc_id):
 	complaints = Complaints.objects.filter(doc_id = doc_id)
 	readable_complaints = []
 	for comp in complaints:
+		complaint_id = comp.id
 		complainer = CustomUser.objects.get(id=comp.complainer).username
 		accused = CustomUser.objects.get(id=comp.accused).username
 		version = comp.version
-		readable_complaints.append((complainer,accused,version))
+		readable_complaints.append((complaint_id,complainer,accused,version))
 	return(readable_complaints)
 		
 # Passes information about a specific document, the taboo list, and the document's history into templates/viewDoc.html
@@ -144,6 +148,36 @@ def ViewDoc(request, doc_id):
 		'updater_name': updater_name,
 		'complaints': complaints
     })
+def Complaint_Dismiss(request, comp_id):
+	comp = Complaints.objects.get(id=comp_id)
+	comp.delete()
+	#return HttpResponse('Complaint: ' + str(comp_id) + ' Deleted')
+	return redirect(Profile)
+
+def Complaint_Remove_User(request, comp_id):
+	comp = Complaints.objects.get(id=comp_id)
+	doc_id = comp.doc_id
+	user = comp.accused
+
+	doc = Document.objects.get(id=doc_id)
+	collab = doc.collaborators
+	collab = collab.split('/')
+	
+	def remove_values_from_list(the_list, val):
+		return [value for value in the_list if value != val]
+
+	collab = remove_values_from_list(collab,str(user))
+	collab = '/'.join(collab)
+
+	doc.collaborators = collab
+
+	#Unlock Doc if locked by Removed Collaborator
+	if doc.locked == False and doc.locked_by == user:
+		doc.locked = 0
+		doc.locked_by = None
+
+	doc.save()
+	return redirect(Profile)
 
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
 # 	the helper function updateContent() below.

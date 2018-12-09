@@ -110,6 +110,7 @@
   <h3>Complaints</h3>
   <table>
     <tr>
+      <th>ID</th>
       <th>Complainer</th>
       <th>Accused</th>
       <th>Version</th>
@@ -120,28 +121,50 @@
         <td>{{comp.0}}</td>
         <td>{{comp.1}}</td>
         <td>{{comp.2}}</td>
+        <td>{{comp.3}}</td>
       </tr>
     {% endfor %}
-
-
-
   </table>
+</div>
+
+<div style="display: inline-block; float: none;">
+    <p>Dismiss Complaint
+      <select name=" DismissComplaint" onchange="location = this.value">
+          <option selected="Complaint"></option>
+          {% for comp in complaints %}
+            <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
+          {% endfor %}
+      </select>
+  </p>
+
+  <p>Remove Accused as Collaborator
+      <select name=" DismissComplaint" onchange="location = this.value">
+          <option selected="Complaint"></option>
+          {% for comp in complaints %}
+            <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
+          {% endfor %}
+      </select>
+  </p>
 </div>
 
 
 
+
+<p></p>
 <div style="float: none; display: inline-block;">
 <div style="display: flex; text-align: center; margin-top: 0em;">
-  {% if user.is_OU %}
-    <button style="height: 100%; margin: auto 0 auto 0;">
-      <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
-    </button>
-  {% else %}
-    <button>
-      <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
-    </button>
-  {% endif %}
-  <p style="margin: auto 0 auto 1em;"><a href="{% url 'logout' %}">Logout</a></p>
+  
+    {% if user.is_OU %}
+      <button style="height: 100%; margin: auto 0 auto 0;">
+        <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
+      </button>
+    {% else %}
+      <button>
+        <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+      </button>
+    {% endif %}
+    <p style="margin: auto 0 auto 1em;"><a href="{% url 'logout' %}">Logout</a></p>
+
 </div>
 </div>
 {% endblock %}

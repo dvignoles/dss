@@ -17,5 +17,8 @@ urlpatterns = [
     url(r'^view/(?P<doc_id>[0-9]*)$', views.ViewDoc, name='view'),
     url(r'^viewOldVersion/(?P<doc_id>[0-9]*)(?P<delimiter>[|]+)(?P<oldVersion>[0-9]*)$', views.ViewOldVersion, name='viewOldVersion'),
     url(r'^changeLockedStatus/(?P<doc_id>[0-9]*)$', views.ChangeLockedStatus, name='changeLockedStatus'),
-    url(r'^complain/(?P<doc_id>[0-9]*)$', views.Complain, name='complain')
+    url(r'^complain/(?P<doc_id>[0-9]*)$', views.Complain, name='complain'),
+    url(r'^complaint_dismiss/(?P<comp_id>[0-9]*)$', views.Complaint_Dismiss, name = 'complaint_dismiss'),
+    url(r'^complaint_remove_user/(?P<comp_id>[0-9]*)$', views.Complaint_Remove_User, name = 'complaint_remove_user')
+ 
 ]
