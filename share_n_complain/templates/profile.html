@@ -5,38 +5,20 @@
 
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
-<<<<<<< HEAD
   <div>
-  <div id="pro_pic">
-  	<img src="{% static 'img/' %}{{user.prof_pic_num}}.png"/>
+    <h2>Share Requests</h2>
+      <form type = "get">
+        <select name = "shared_doc_select">
+          <option selected="selected"></option>
+              {% for doc_id, title in sharedDocTitles.items %}
+                <option value={{doc_id}}>{{title}}</option>
+              {% endfor %}
+        </select>
+        <input type="radio" name="decision" value = 'a'>Accept</input>
+        <input type="radio" name="decision" value = 'd'>Deny</input>
+        <button type="submit">Submit</button>
+      </form>
   </div>
-  <div>
-  <h2>Share Requests</h2>
-    <form type = "get">
-      <select name = "shared_doc_select">
-        <option selected="selected"></option>
-            {% for doc_id, title in sharedDocTitles.items %}
-              <option value={{doc_id}}>{{title}}</option>
-            {% endfor %}
-      </select>
-      <input type="radio" name="decision" value = 'a'>Accept</input>
-      <input type="radio" name="decision" value = 'd'>Deny</input>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-  <div>
-  <h2 style="font-weight:bold">{{ user.username }}'s Profile Page</h2>
-  <p>Interests: {{ interests }}</p>
-  <p>
-	  <button>
-		<a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
-	  </button>
-    <button>
-    <a href="{% url 'suggestTaboo' %}" style="text-decoration:none;">Suggest a Taboo Word</a>
-    </button>
-  </p>
-  </div>
-=======
   <div style="display: inline-block;">
     <div style="display: flex;">
       <div id="pro_pic" style="padding-right: 1em;">
@@ -78,7 +60,6 @@
         </table>
         {% endif %}
     </div>
->>>>>>> 546fa8e5b33a775ff5185f9a73f85c98bb5721b6
   </div>
   <div class="doc_list">
 	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
