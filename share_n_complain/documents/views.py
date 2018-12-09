@@ -25,19 +25,19 @@ from share_n_complain.views import Profile
 
 # Creates a document by passing the DocumentCreationForm (located in documents/forms.py) into templates/createDoc.html 
 def CreateDoc(request):
-    if request.method == 'POST':
-        form = DocumentCreationForm(request.POST)
-        if form.is_valid():
-            doc = form.save(commit=False)
-            doc.owner = request.user
-			
-            doc.save()
-            return HttpResponseRedirect('/profile')
-    else:
-        form = DocumentCreationForm()
-    return render(request, 'createDoc.html', {
-        'form': form
-    })
+	if request.method == 'POST':
+		form = DocumentCreationForm(request.POST)
+		if form.is_valid():
+			doc = form.save(commit=False)
+			doc.owner = request.user
+			doc.updater_id = request.user.id
+			doc.save()
+			return HttpResponseRedirect('/profile')
+	else:
+		form = DocumentCreationForm()
+	return render(request, 'createDoc.html', {
+		'form': form
+	})
 
 # When the user locks/unlocks a document, this function updates that document's 'locked' and 'locked_by' attributes in the database,
 # 	and then returns the user to the document via documents/view/doc_id.

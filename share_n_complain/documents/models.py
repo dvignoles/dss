@@ -9,7 +9,6 @@
 from django.db import models
 from users.models import CustomUser
 
-
 class Document(models.Model):
 	owner = models.ForeignKey(CustomUser, null=False, on_delete=models.CASCADE)
 	collaborators = models.CharField(max_length=100, default='')
