@@ -147,7 +147,7 @@ def ViewDoc(request, doc_id):
     	'tabooIndex': tabooIndex,
 		'updater_id' : updater_id,
 		'updater_name': updater_name,
-		'complaints': complaints
+		'complaints': complaints,
     	'searchQuery': searchQuery,
     })
 def Complaint_Dismiss(request, comp_id):
