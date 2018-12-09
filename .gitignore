@@ -116,3 +116,9 @@ dmypy.json
 .vscode/my_workspace.code-workspace
 .vscode/settings.json
 
+.vscode/
+/.vscode
+users.txt
+.vscode/settings.json
+share_n_complain/.vscode/settings.json
+

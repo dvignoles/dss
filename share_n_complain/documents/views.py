@@ -80,6 +80,7 @@ def getComplaints(doc_id):
 def ViewDoc(request, doc_id):
 	doc_session_set(request, doc_id,old_version=False)
 
+	searchQuery = request.GET.get('search_box')  # gets search query from search box
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
@@ -147,6 +148,7 @@ def ViewDoc(request, doc_id):
 		'updater_id' : updater_id,
 		'updater_name': updater_name,
 		'complaints': complaints
+    	'searchQuery': searchQuery,
     })
 def Complaint_Dismiss(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
