@@ -24,10 +24,20 @@
   </div>
   <div class="doc_list">
 	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
+    <form type="get">
+      <input id="search_box" type="text" name="search_box" placeholder="Search..." />
+      <button id="search_submit" type="submit">Submit</button>
+    </form>
 	  {% for doc in myDocs %}
-	  	<p>
-	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
-	  	</p>
+      {% if doc.id in docsContainingSearchQuery %}
+  	  	<p style="background-color: #5AFC3D">
+  	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;"">{{ doc.title }}</a>
+  	  	</p>
+      {% else %}
+        <p>
+          <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
+        </p>
+      {% endif %}
 	  {% endfor %}
   </div>
   <div class="doc_list">
