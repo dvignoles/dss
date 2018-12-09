@@ -42,11 +42,6 @@
       {% endif %}
     </div>
 
-    
-
-    
-    
-
     <div style="font-style: italic; margin-bottom: -1em;">
       {% if owner_id == user_id %}
         {% if private %}
@@ -109,6 +104,32 @@
     {% endif %}
   {% endfor %}
 </ol>
+
+
+<div>
+  <h3>Complaints</h3>
+  <table>
+    <tr>
+      <th>Complainer</th>
+      <th>Accused</th>
+      <th>Version</th>
+    </tr>
+
+    {% for comp in complaints %}
+      <tr>
+        <td>{{comp.0}}</td>
+        <td>{{comp.1}}</td>
+        <td>{{comp.2}}</td>
+      </tr>
+    {% endfor %}
+
+
+
+  </table>
+</div>
+
+
+
 <div style="float: none; display: inline-block;">
 <div style="display: flex; text-align: center; margin-top: 0em;">
   {% if user.is_OU %}

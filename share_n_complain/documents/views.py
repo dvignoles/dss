@@ -61,6 +61,16 @@ def doc_session_set(request, doc_id, old_version, version_id = -1):
 		versionHistory = History.objects.get(doc_id=doc_id, version=version_id)
 		versionUpdaterId= versionHistory.updater_ids[-1]
 		request.session['current_doc_last_updater'] = versionUpdaterId
+
+def getComplaints(doc_id):
+	complaints = Complaints.objects.filter(doc_id = doc_id)
+	readable_complaints = []
+	for comp in complaints:
+		complainer = CustomUser.objects.get(id=comp.complainer).username
+		accused = CustomUser.objects.get(id=comp.accused).username
+		version = comp.version
+		readable_complaints.append((complainer,accused,version))
+	return(readable_complaints)
 		
 # Passes information about a specific document, the taboo list, and the document's history into templates/viewDoc.html
 def ViewDoc(request, doc_id):
@@ -111,6 +121,8 @@ def ViewDoc(request, doc_id):
 
 	is_OU = request.user.is_OU
 
+	complaints = getComplaints(doc_id)
+
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'is_OU':is_OU,
@@ -129,7 +141,8 @@ def ViewDoc(request, doc_id):
     	'hasTaboo': hasTaboo,
     	'tabooIndex': tabooIndex,
 		'updater_id' : updater_id,
-		'updater_name': updater_name
+		'updater_name': updater_name,
+		'complaints': complaints
     })
 
 # Takes changes (from History model) needed to achieve 'oldVersion' of a document with id 'doc_id' and applies them using 
