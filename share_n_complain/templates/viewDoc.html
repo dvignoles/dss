@@ -75,6 +75,10 @@
     </div>
   {% endif %}
 {% endif %}
+<form type="get">
+  <input id="search_box" type="text" name="search_box" placeholder="Search..." />
+  <button id="search_submit" type="submit">Submit</button>
+</form>
 <ol class="doc_view">
   {% for c in content %}
     {% if c in tabooList %}
@@ -82,9 +86,15 @@
         UNK
       </li>
     {% else %}
-      <li style="padding-left: 0.5em;">
-        {{ c }}
-      </li>
+      {% if searchQuery in c %}
+        <li style="padding-left: 0.5em; background-color: #5AFC3D;">
+          {{ c }}
+        </li>
+      {% else %}
+        <li style="padding-left: 0.5em;">
+          {{ c }}
+        </li>
+      {% endif %}
     {% endif %}
   {% endfor %}
 </ol>
