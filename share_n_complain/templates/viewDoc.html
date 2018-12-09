@@ -18,6 +18,7 @@
   {% endif %}
     <div style="display: inline-flex;">
       <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
+      
       {% ifequal user_id owner_id %}
         {% if not private %}
           <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
@@ -27,14 +28,24 @@
       {% endifequal %}
     </div>
 
+    <div>
+      {% if updater_id != 0 %}
+        <h3>Last Updated By: {{updater_name}}</h3>
+      {% endif %}
 
-    {%if updater_id != 0 %}
-    <h3>Last Updated By: {{updater_name}}</h3>
-    <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
-      <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
-    </button>
-    {% endif %}
+      {% if is_OU %}
+        {% if owner_id != user_id %}
+          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
+            <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
+          </button>
+        {% endif %}
+      {% endif %}
+    </div>
 
+    
+
+    
+    
 
     <div style="font-style: italic; margin-bottom: -1em;">
       {% if owner_id == user_id %}

@@ -80,6 +80,7 @@ def ViewDoc(request, doc_id):
 	content = content.split('/')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
+		
 	except:
 		editor = 'none'
 		print('Document has not been locked yet')
@@ -107,8 +108,12 @@ def ViewDoc(request, doc_id):
 	else:
 		updater_name = 'NA'
 
+
+	is_OU = request.user.is_OU
+
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
+		'is_OU':is_OU,
 		'owner_id': str(owner_id),
 		'title': title,
 		'private': private,
@@ -154,6 +159,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 		updatedContent = updateContent(updatedContent, change.split('-'))
 	return render(request, 'viewOldVersion.html', {
 		'user_id': str(request.user.id),
+		'is_OU': request.user.is_OU,
 		'owner_id': str(owner_id),
 		'title': title,
 		'doc_id': doc_id,
@@ -284,6 +290,12 @@ def DeleteLine(request, doc_id):
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+
+
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+
+
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
@@ -309,7 +321,8 @@ def UpdateLine(request, doc_id):
 			content = '/'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
-
+			#keep track of last user
+			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
 			
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
