@@ -20,6 +20,8 @@ from users.views import getOuUsernames
 from taboo.views import getTabooList
 
 
+
+
 # Creates a document by passing the DocumentCreationForm (located in documents/forms.py) into templates/createDoc.html 
 def CreateDoc(request):
     if request.method == 'POST':
@@ -294,15 +296,32 @@ def ShareDoc(request, doc_id):
 		form = ShareDocForm(request.POST)
 		usernameSharedWith = request.POST.get('username-dropdown')
 		usersSharedWith = CustomUser.objects.filter(username=usernameSharedWith)
-		for user in usersSharedWith:
-			user_id = user.id
+		
+		#NEW CODE ADDED
+		#updates 'share_requests' attribute in selected user
+		#please work
+
+		for requests in usersSharedWith:
+			current_requests = requests.share_requests
 		docs = Document.objects.filter(id=doc_id)
 		for doc in docs:
-			collaborators = doc.collaborators
-		if collaborators == "":
-			Document.objects.filter(id=doc_id).update(collaborators=str(user_id))
+			doc_id = doc.id
+		if current_requests == "":
+			usersSharedWith.update(share_requests=str(doc_id))
 		else:
-			Document.objects.filter(id=doc_id).update(collaborators=str(collaborators) + '/' + str(user_id))
+			usersSharedWith.update(share_requests=str(current_requests) + '/' + str(doc_id))
+
+#old code below
+#		for user in usersSharedWith:
+#			user_id = user.id
+#		doc = Document.objects.filter(id=doc_id)
+#		for doc in docs:
+#			collaborators = doc.collaborators
+#		if collaborators == "":
+#			Document.objects.filter(id=doc_id).update(collaborators=str(user_id))
+#		else:
+#			Document.objects.filter(id=doc_id).update(collaborators=str(collaborators) + '/' + str(user_id))
+#end old code
 		# content = content.split('/')
 		# lineToUpdate = form.cleaned_data['lineToUpdate']
 		# newContent = form.cleaned_data['newContent']
