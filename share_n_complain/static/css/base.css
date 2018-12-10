@@ -12,12 +12,13 @@ main {
 }
 
 .doc_list {
+	position: relative;
 	background-color: #e1e8f0;
 	border: solid;
 	display: inline-block;
 	padding: 1em;
 	vertical-align: top;
-	height: 20em;
+	height: 30.1em;
 	overflow-y: scroll;
 	text-align: left;
 }
