@@ -458,15 +458,22 @@ def ShareDoc(request, doc_id):
 		#updates 'share_requests' attribute in selected user
 		#please work
 
-		for requests in usersSharedWith:
-			current_requests = requests.share_requests
+		for user in usersSharedWith:
+			currentRequests = user.share_requests
+			sharedUserID = str(user.id)
 		docs = Document.objects.filter(id=doc_id)
 		for doc in docs:
 			doc_id = doc.id
-		if current_requests == "":
-			usersSharedWith.update(share_requests=str(doc_id))
-		else:
-			usersSharedWith.update(share_requests=str(current_requests) + '/' + str(doc_id))
+			owner_id = str(doc.owner_id)
+			collaborators = doc.collaborators
+		collaborators = collaborators.split('/')
+
+		if sharedUserID not in collaborators:
+			if sharedUserID != owner_id:
+				if currentRequests == "":
+					usersSharedWith.update(share_requests=str(doc_id))
+				else:
+					usersSharedWith.update(share_requests=str(currentRequests) + '/' + str(doc_id))
 
 #old code below
 #		for user in usersSharedWith:
@@ -485,7 +492,7 @@ def ShareDoc(request, doc_id):
 		# content[lineToUpdate-1] = newContent
 		# content = '/'.join(content)
 		# Document.objects.filter(id=doc_id).update(content=content)
-		return HttpResponseRedirect('/profile')
+		return HttpResponseRedirect('/documents/view/' + str(doc_id))
 	else:
 		form = ShareDocForm()
 	return render(request, 'shareDoc.html', {
