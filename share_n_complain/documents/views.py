@@ -94,7 +94,7 @@ def ViewDoc(request, doc_id):
 		version = doc.version
 		locked = doc.locked
 		locked_by = doc.locked_by
-	content = content.split('/')
+	content = content.split('~')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
 		
@@ -107,15 +107,38 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
-	for index, value in enumerate(content): 		# Checks if document contains a taboo word. If so, 'hasTaboo' attribute of that
-		if value in tabooList:						# 	document is updated to True
-			hasTaboo = True
-			tabooIndex = index
+	tabooIndices = []
+	for index, line in enumerate(content): # Finds all indices containing taboo words
+		if " " in line:
+			line = line.split(" ")
+			for word in line:
+				if word in tabooList:
+					tabooIndices.append(index)
+					break
+		elif line in tabooList:
+			tabooIndices.append(index)
+
+	currTabooIndex = None
+	for index, line in enumerate(content): # Finds taboo word with lowest index
+		if " " in line:
+			line = line.split(" ")
+			for word in line:
+				if word in tabooList:
+					currTabooIndex = index
+					break
+			if currTabooIndex:
+				break
+		elif line in tabooList:
+			currTabooIndex = index
 			break
-		else:
-			hasTaboo = False
-			tabooIndex = None
-	Document.objects.filter(id=doc_id).update(taboo_index=tabooIndex)
+	print(currTabooIndex)
+
+	if len(tabooIndices) > 0:
+		hasTaboo = True
+	else:
+		hasTaboo = False
+
+	Document.objects.filter(id=doc_id).update(taboo_index=currTabooIndex)
 
 	#ID of last persion to update document
 	updater_id = Document.objects.get(id=doc_id).updater_id
@@ -148,7 +171,8 @@ def ViewDoc(request, doc_id):
     	'editor': editor,
     	'tabooList': tabooList,
     	'hasTaboo': hasTaboo,
-    	'tabooIndex': tabooIndex,
+    	'currTabooIndex': currTabooIndex,
+    	'tabooIndices': tabooIndices,
 		'updater_id' : updater_id,
 		'updater_name': updater_name,
 		'complaints': complaints,
@@ -164,6 +188,8 @@ def Complaint_Remove_User(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
 	doc_id = comp.doc_id
 	user = comp.accused
+
+	comp.delete() # remove complaint after handled
 
 	doc = Document.objects.get(id=doc_id)
 	collab = doc.collaborators
@@ -207,7 +233,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 	for vh in versionHistory:
 		versionHistory = vh
 	changes = versionHistory.changes.split('/')
-	updatedContent = content.split('/')
+	updatedContent = content.split('~')
 	for change in changes:													# updates current content to previous version
 		updatedContent = updateContent(updatedContent, change.split('-'))
 
@@ -264,17 +290,20 @@ def FixTaboo(request, doc_id):
 				prevVersion = doc.version
 				tabooIndex = doc.taboo_index
 			newContent = form.cleaned_data['newContent']
-			oldContent = oldContent.split('/')
+			oldContent = oldContent.split('~')
 			changes = 'update-' + oldContent[tabooIndex] + '-' + str(tabooIndex+1)
 			oldContent[tabooIndex] = newContent
-			updatedContent = '/'.join(oldContent)
+			updatedContent = '~'.join(oldContent)
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = AddLineForm()
-	return render(request, 'addLine.html', {'form': form})
+	return render(request, 'addLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Adds a line to the end of a document using the AddLine form in documents/forms.py
 # Renders the updated document by redirecting to documents/view/doc_id
@@ -292,8 +321,8 @@ def AddLine(request, doc_id):
 				lineToRemove = 1
 				updatedContent = newContent
 			else:
-				lineToRemove = len(oldContent.split('/')) + 1
-				updatedContent = oldContent + '/' + newContent
+				lineToRemove = len(oldContent.split('~')) + 1
+				updatedContent = oldContent + '~' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 
@@ -305,7 +334,10 @@ def AddLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = AddLineForm()
-	return render(request, 'addLine.html', {'form': form})
+	return render(request, 'addLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 	####  Adds to a specific line number
 	# if request.method == 'POST':
 	# 	form = AddLineForm(request.POST)
@@ -340,13 +372,13 @@ def DeleteLine(request, doc_id):
 			for doc in docs:
 				content = doc.content
 				prevVersion = doc.version
-			content = content.split('/')
+			content = content.split('~')
 			lineToDelete = form.cleaned_data['lineToDelete']
 			lineToAdd = lineToDelete 								#for changes in history model
 			contentToAdd = content[lineToAdd-1] 					#for changes in history model
 			changes = 'add-' + contentToAdd + '-' + str(lineToAdd)  #for changes in history model
 			del content[lineToDelete-1:lineToDelete]
-			content = '/'.join(content)
+			content = '~'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 
@@ -359,7 +391,10 @@ def DeleteLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = DeleteLineForm()
-	return render(request, 'deleteLine.html', {'form': form})
+	return render(request, 'deleteLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Updates a specific line of a document to new content via UpdateLineForm in documents/forms.py
 # Renders the updated document by redirecting to documents/view/doc_id
@@ -371,13 +406,13 @@ def UpdateLine(request, doc_id):
 			for doc in docs:
 				content = doc.content
 				prevVersion = doc.version
-			content = content.split('/')
+			content = content.split('~')
 			lineToUpdate = form.cleaned_data['lineToUpdate']
 			newContent = form.cleaned_data['newContent']
 			oldContent = content[lineToUpdate-1]
 			changes = 'update-' + oldContent + '-' + str(lineToUpdate)
 			content[lineToUpdate-1] = newContent
-			content = '/'.join(content)
+			content = '~'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			#keep track of last user
@@ -387,7 +422,10 @@ def UpdateLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = UpdateLineForm()
-	return render(request, 'updateLine.html', {'form': form})
+	return render(request, 'updateLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Helper function to update the History model whenever a document is changed
 def updateHistory(request, doc_id, changes, prevVersion):

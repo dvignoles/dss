@@ -7,6 +7,9 @@
   <form method="post" action="" autocomplete="off">
     {% csrf_token %}
     {{ form.as_p }}
+    <button style="height: 100%; margin: auto 0 auto 0;">
+		<a href={% url 'profile' %} style="text-decoration:none;">Back to Profile</a>
+	</button>
     <button type="submit">Suggest</button>
   </form>
 {% endblock %}

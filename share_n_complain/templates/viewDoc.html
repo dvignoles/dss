@@ -5,28 +5,35 @@
 
 {% block content %}
 <div>
-  <div style="margin-bottom: 1em;">
-    {% if is_collaborator or owner_id == user_id %}
-      {% if locked %}
-        {% if locked_by == user_id or owner_id == user_id %}
-          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
-        {% endif %}
-      {% else %}
-        {% if is_collaborator or owner_id == user_id %}
-          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
-        {% endif %}
-      {% endif %}
-    {% endif %}
+  <div style="width: 600px; text-align: center;">
     <div style="display: inline-flex;">
       <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
-      
-      {% ifequal user_id owner_id %}
-        {% if not private %}
-          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
-            <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
-          </button>
+    </div>
+    <div style="display: flex; margin: 0px auto; width: 50%;">
+      {% if is_collaborator or owner_id == user_id %}
+        {% if locked %}
+          {% if locked_by == user_id or owner_id == user_id %}
+            <div style="margin-right: 1em;">
+              <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
+              <p style="font-size: 15px; font-style: italic; margin-top: -0.2em;">(Click to finish editing)</p></a>
+            </div>
+          {% endif %}
+        {% else %}
+          {% if is_collaborator or owner_id == user_id %}
+            <div style="margin-right: 1em;">
+              <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
+              <p style="font-size: 15px; font-style: italic; margin-top: -0.2em;">(Click to edit)</p></a>
+            </div>
+          {% endif %}
         {% endif %}
-      {% endifequal %}
+        {% ifequal user_id owner_id %}
+          {% if not private %}
+            <button style="height: 50%; margin-left: 1em; margin: auto; margin-left: 1em;">
+              <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+            </button>
+          {% endif %}
+        {% endifequal %}
+      {% endif %}
     </div>
   </div>
 
@@ -58,14 +65,23 @@
       {% endif %}
     </div>
 </div>
+
+<div style="padding-bottom: 1em;">
+  <form type="get" autocomplete="off">
+    <input id="search_box" type="text" name="search_box" placeholder="Search for (partial) keyword in doc" style="width: 17em;" required />
+    <button id="search_submit" type="submit">Search</button>
+  </form>
+</div>
+
 {% if hasTaboo %}
   <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
-    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL TABOO WORDS BEOFRE CONTINUING!</p>
+    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL LINES WITH TABOO WORDS BEOFRE CONTINUING!</p>
     <button>
-      <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ tabooIndex|add:1 }}</a>
+      <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ currTabooIndex|add:1 }}</a>
     </button>
   </div>
 {% endif %}
+
 {% if user.is_OU and locked and not hasTaboo %}
   {% if locked_by == user_id or owner_id == user_id %}
     <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
@@ -81,38 +97,44 @@
     </div>
   {% endif %}
 {% endif %}
-<div style="padding-bottom: 0.5em;">
-  <form type="get" autocomplete="off">
-    <input id="search_box" type="text" name="search_box" placeholder="Search for (partial) keyword in doc" style="width: 17em;" required />
-    <button id="search_submit" type="submit">Submit</button>
-  </form>
-</div>
+
 <ol class="doc_view">
-  {% for c in content %}
-    {% if c in tabooList %}
-    	<li style="padding-left: 0.5em; background-color: red;">
-        UNK
-      </li>
+  {% for line in content %}
+    {% if hasTaboo %}
+      {% if forloop.counter0 in tabooIndices %}
+        <li style="padding-left: 0.5em; background-color: red;">
+          UNK
+        </li>
+      {% else %}
+        {% if searchQuery in line %}
+          <li style="padding-left: 0.5em; background-color: #5AFC3D;">
+            {{ line }}
+          </li>
+        {% else %}
+          <li style="padding-left: 0.5em;">
+            {{ line }}
+          </li>
+        {% endif %}
+      {% endif %}
     {% else %}
-      {% if searchQuery in c %}
+      {% if searchQuery in line %}
         <li style="padding-left: 0.5em; background-color: #5AFC3D;">
-          {{ c }}
+          {{ line }}
         </li>
       {% else %}
         <li style="padding-left: 0.5em;">
-          {{ c }}
+          {{ line }}
         </li>
       {% endif %}
     {% endif %}
   {% endfor %}
 </ol>
 
-<div style="display: flex;">
+<div style="width: 600px; text-align: center; margin-top: -2em;">
   <div>
     {% if updater_id != 0 %}
       <h3>Last Updated By: {{updater_name}}</h3>
     {% endif %}
-
     {% if is_OU %}
       {% if owner_id != user_id %}
         <button style="margin-bottom: 1em; font-size: 2em;">
@@ -121,50 +143,54 @@
       {% endif %}
     {% endif %}
   </div>
+  <div style="margin: 0px auto; display: flex; width: 80%">
+    {% if complaints %}
+      <div style="margin-left: 1em; margin-right: 1em; border-right: solid; padding-left: 1em; padding-right: 1em;">
+        <h3>Complaints</h3>
+        <table>
+          <tr>
+            <th>ID</th>
+            <th>Complainer</th>
+            <th>Accused</th>
+            <th>Version</th>
+          </tr>
 
-  <div>
-    <h3>Complaints</h3>
-    <table>
-      <tr>
-        <th>ID</th>
-        <th>Complainer</th>
-        <th>Accused</th>
-        <th>Version</th>
-      </tr>
+          {% for comp in complaints %}
+            <tr>
+              <td>{{comp.0}}</td>
+              <td>{{comp.1}}</td>
+              <td>{{comp.2}}</td>
+              <td>{{comp.3}}</td>
+            </tr>
+          {% endfor %}
+        </table>
+      </div>
 
-      {% for comp in complaints %}
-        <tr>
-          <td>{{comp.0}}</td>
-          <td>{{comp.1}}</td>
-          <td>{{comp.2}}</td>
-          <td>{{comp.3}}</td>
-        </tr>
-      {% endfor %}
-    </table>
+      {% ifequal owner_id user_id %}
+        <div style="display: inline-block; float: none;">
+            <p>Dismiss Complaint
+              <select name=" DismissComplaint" onchange="location = this.value">
+                  <option selected="Complaint"></option>
+                  {% for comp in complaints %}
+                    <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
+                  {% endfor %}
+              </select>
+          </p>
+
+          <p>Remove Accused as Collaborator
+              <select name=" DismissComplaint" onchange="location = this.value">
+                  <option selected="Complaint"></option>
+                  {% for comp in complaints %}
+                    <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
+                  {% endfor %}
+              </select>
+          </p>
+        </div>
+      {% endifequal  %}
+    {% endif %}
   </div>
-
-  {% ifequal owner_id user_id %}
-    <div style="display: inline-block; float: none;">
-        <p>Dismiss Complaint
-          <select name=" DismissComplaint" onchange="location = this.value">
-              <option selected="Complaint"></option>
-              {% for comp in complaints %}
-                <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
-              {% endfor %}
-          </select>
-      </p>
-
-      <p>Remove Accused as Collaborator
-          <select name=" DismissComplaint" onchange="location = this.value">
-              <option selected="Complaint"></option>
-              {% for comp in complaints %}
-                <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
-              {% endfor %}
-          </select>
-      </p>
-    </div>
-  {% endifequal  %}
 </div>
+
 
 
 
