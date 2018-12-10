@@ -1,6 +1,6 @@
 # share'n'complain
 
-### Neal Rea, Daniel Vignoles, Carl Welch
+### Neal Rea, Daniel Vignoles, Carlton Welch
 
 ## Dev Setup
 1. Move to share_n_complain directory
