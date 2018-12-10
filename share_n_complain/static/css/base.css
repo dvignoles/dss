@@ -19,6 +19,7 @@ main {
 	vertical-align: bottom;
 	height: 21em;
 	overflow-y: scroll;
+	overflow-x: scroll;
 	text-align: left;
 }
 
