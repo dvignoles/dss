@@ -67,6 +67,12 @@ def doc_session_set(request, doc_id, old_version, version_id = -1):
 		versionUpdaterId= versionHistory.updater_ids[-1]
 		request.session['current_doc_last_updater'] = versionUpdaterId
 
+#clear session keys set in doc_session_set
+def doc_session_flush(request):
+	keys = ('current_doc','current_doc_owner','current_doc_version','current_doc_last_updater')
+	for key in keys:
+		del request.session[key]
+
 def getComplaints(doc_id):
 	complaints = Complaints.objects.filter(doc_id = doc_id)
 	readable_complaints = []
@@ -495,8 +501,9 @@ def Complain(request, doc_id):
 	c = Complaints(doc=doc,version=version,complainer=complainer,accused=accused)
 	c.save()
 
-	request.session.flush()
-	context = {}
+	doc_session_flush(request)
+
+	#context = {}
 	#return render(request,'complain.html', context)
 	return HttpResponseRedirect('/documents/view/' + doc_id)
 

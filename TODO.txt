@@ -1,0 +1,14 @@
+#Complain about owner button + admin interface (Working on - Daniel)
+
+#Share Doc redirect back to Document instead of profile page
+
+#Taboo words displaying in Version History View
+
+#Display collaborators on document view
+
+#Disallow adding self as collaborator, or adding same collaborator multiple times
+
+#Complaints Table Formatting
+
+#Disallow complaining about version 1 (empty doc)
+
