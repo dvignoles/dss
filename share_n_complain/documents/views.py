@@ -107,8 +107,16 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
-	for index, value in enumerate(content): 		# Checks if document contains a taboo word. If so, 'hasTaboo' attribute of that
-		if value in tabooList:						# 	document is updated to True
+	for index, line in enumerate(content): # Checks if document contains a taboo word. If so, 'hasTaboo' attribute of that document is updated to True
+		if " " in line:
+			line = line.split(" ")
+			for word in line:
+				if word in tabooList:
+					hasTaboo = True
+					tabooIndex = index
+					break
+			break
+		elif line in tabooList:
 			hasTaboo = True
 			tabooIndex = index
 			break

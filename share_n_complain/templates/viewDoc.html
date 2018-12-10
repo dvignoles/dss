@@ -5,28 +5,36 @@
 
 {% block content %}
 <div>
-  <div style="margin-bottom: 1em;">
-    {% if is_collaborator or owner_id == user_id %}
-      {% if locked %}
-        {% if locked_by == user_id or owner_id == user_id %}
-          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
-        {% endif %}
-      {% else %}
-        {% if is_collaborator or owner_id == user_id %}
-          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+  <div style="width: 100%; text-align: center;">
+    <div style="display: flex; margin: 0px auto; width: 50%;">
+      {% if is_collaborator or owner_id == user_id %}
+        {% if locked %}
+          {% if locked_by == user_id or owner_id == user_id %}
+            <div style="margin-right: 1em;">
+              <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" />
+              <p style="font-size: 15px; font-style: italic; margin-top: -0.2em;">(Click to finish editing)</p></a>
+            </div>
+          {% endif %}
+        {% else %}
+          {% if is_collaborator or owner_id == user_id %}
+            <div style="margin-right: 1em;">
+              <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/>
+              <p style="font-size: 15px; font-style: italic; margin-top: -0.2em;">(Click to edit)</p></a>
+            </div>
+          {% endif %}
         {% endif %}
       {% endif %}
-    {% endif %}
-    <div style="display: inline-flex;">
-      <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
-      
-      {% ifequal user_id owner_id %}
-        {% if not private %}
-          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
-            <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
-          </button>
-        {% endif %}
-      {% endifequal %}
+      <div style="display: inline-flex;">
+        <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
+        
+        {% ifequal user_id owner_id %}
+          {% if not private %}
+            <button style="height: 50%; margin-left: 1em; margin: auto; margin-left: 1em;">
+              <a href={% url 'shareDoc' doc_id=doc_id %} style="text-decoration:none;">Share Document</a>
+            </button>
+          {% endif %}
+        {% endifequal %}
+      </div>
     </div>
   </div>
 
@@ -60,7 +68,7 @@
 </div>
 {% if hasTaboo %}
   <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
-    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL TABOO WORDS BEOFRE CONTINUING!</p>
+    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL LINES WITH TABOO WORDS BEOFRE CONTINUING!</p>
     <button>
       <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ tabooIndex|add:1 }}</a>
     </button>
@@ -88,19 +96,31 @@
   </form>
 </div>
 <ol class="doc_view">
-  {% for c in content %}
-    {% if c in tabooList %}
-    	<li style="padding-left: 0.5em; background-color: red;">
-        UNK
-      </li>
+  {% for line in content %}
+    {% if hasTaboo %}
+      {% if forloop.counter0 == tabooIndex %}
+        <li style="padding-left: 0.5em; background-color: red;">
+          UNK
+        </li>
+      {% else %}
+        {% if searchQuery in line %}
+          <li style="padding-left: 0.5em; background-color: #5AFC3D;">
+            {{ line }}
+          </li>
+        {% else %}
+          <li style="padding-left: 0.5em;">
+            {{ line }}
+          </li>
+        {% endif %}
+      {% endif %}
     {% else %}
-      {% if searchQuery in c %}
+      {% if searchQuery in line %}
         <li style="padding-left: 0.5em; background-color: #5AFC3D;">
-          {{ c }}
+          {{ line }}
         </li>
       {% else %}
         <li style="padding-left: 0.5em;">
-          {{ c }}
+          {{ line }}
         </li>
       {% endif %}
     {% endif %}
