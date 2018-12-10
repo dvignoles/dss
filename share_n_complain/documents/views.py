@@ -165,6 +165,8 @@ def Complaint_Remove_User(request, comp_id):
 	doc_id = comp.doc_id
 	user = comp.accused
 
+	comp.delete() # remove complaint after handled
+
 	doc = Document.objects.get(id=doc_id)
 	collab = doc.collaborators
 	collab = collab.split('/')
