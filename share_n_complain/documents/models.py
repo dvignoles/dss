@@ -9,14 +9,25 @@
 from django.db import models
 from users.models import CustomUser
 
-
 class Document(models.Model):
 	owner = models.ForeignKey(CustomUser, null=False, on_delete=models.CASCADE)
 	collaborators = models.CharField(max_length=100, default='')
+
 	title = models.CharField(max_length=100, default='')
 	content = models.CharField(max_length=10000, default='')
 	private = models.BooleanField('Private?', default=False)
 	version = models.IntegerField(default=1)
+
+
+
+
+	#ID of CustomUser who saved current document version
+	updater_id = models.IntegerField(blank=True, null=True,default=0)
+
+
+
+
+
 	locked = models.BooleanField('Locked Status', default=False)
 	locked_by = models.IntegerField(blank=True, null=True)
 	taboo_index = models.IntegerField(blank=True, null=True)
@@ -33,18 +44,16 @@ class History(models.Model):
 	
 	def __str__(self):
 		history = 'doc id: ' + str(self.doc_id) + ' - version: ' + str(self.version)
-		return history
+		return history		
 
-#UNDER CONSTRUCTION
-# class Complaints(models.Model):
-# 	#Document Details
-# 	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
-# 	line_number_choices = (,) #TODO: Populate with ('1','1'), ('2',2') etc. based on number of lines in doc
+class Complaints(models.Model):
+	#Document Details
+	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
+	version = models.IntegerField(null=True)
 
-# 	line_number = models.IntegerField(choices=line_number_choices)
-
-# 	#User Details
-# 	accused = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+	#User Details
+	complainer = models.IntegerField(null=True)
+	accused = models.IntegerField(null=True)
 
 
 

@@ -18,6 +18,7 @@
   {% endif %}
     <div style="display: inline-flex;">
       <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
+      
       {% ifequal user_id owner_id %}
         {% if not private %}
           <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
@@ -26,6 +27,21 @@
         {% endif %}
       {% endifequal %}
     </div>
+
+    <div>
+      {% if updater_id != 0 %}
+        <h3>Last Updated By: {{updater_name}}</h3>
+      {% endif %}
+
+      {% if is_OU %}
+        {% if owner_id != user_id %}
+          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
+            <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
+          </button>
+        {% endif %}
+      {% endif %}
+    </div>
+
     <div style="font-style: italic; margin-bottom: -1em;">
       {% if owner_id == user_id %}
         {% if private %}
@@ -75,10 +91,12 @@
     </div>
   {% endif %}
 {% endif %}
-<form type="get">
-  <input id="search_box" type="text" name="search_box" placeholder="Search..." />
-  <button id="search_submit" type="submit">Submit</button>
-</form>
+<div style="padding-bottom: 0.5em;">
+  <form type="get" autocomplete="off">
+    <input id="search_box" type="text" name="search_box" placeholder="Search..." />
+    <button id="search_submit" type="submit">Submit</button>
+  </form>
+</div>
 <ol class="doc_view">
   {% for c in content %}
     {% if c in tabooList %}
@@ -98,18 +116,69 @@
     {% endif %}
   {% endfor %}
 </ol>
+
+
+<div>
+  <h3>Complaints</h3>
+  <table>
+    <tr>
+      <th>ID</th>
+      <th>Complainer</th>
+      <th>Accused</th>
+      <th>Version</th>
+    </tr>
+
+    {% for comp in complaints %}
+      <tr>
+        <td>{{comp.0}}</td>
+        <td>{{comp.1}}</td>
+        <td>{{comp.2}}</td>
+        <td>{{comp.3}}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+
+{% ifequal owner_id user_id %}
+  <div style="display: inline-block; float: none;">
+      <p>Dismiss Complaint
+        <select name=" DismissComplaint" onchange="location = this.value">
+            <option selected="Complaint"></option>
+            {% for comp in complaints %}
+              <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
+            {% endfor %}
+        </select>
+    </p>
+
+    <p>Remove Accused as Collaborator
+        <select name=" DismissComplaint" onchange="location = this.value">
+            <option selected="Complaint"></option>
+            {% for comp in complaints %}
+              <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
+            {% endfor %}
+        </select>
+    </p>
+  </div>
+{% endifequal  %}
+
+
+
+
+<p></p>
 <div style="float: none; display: inline-block;">
 <div style="display: flex; text-align: center; margin-top: 0em;">
-  {% if user.is_OU %}
-    <button style="height: 100%; margin: auto 0 auto 0;">
-      <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
-    </button>
-  {% else %}
-    <button>
-      <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
-    </button>
-  {% endif %}
-  <p style="margin: auto 0 auto 1em;"><a href="{% url 'logout' %}">Logout</a></p>
+  
+    {% if user.is_OU %}
+      <button style="height: 100%; margin: auto 0 auto 0;">
+        <a href={% url 'profile' %} style="text-decoration:none;">{{ user.username }}'s Profile</a>
+      </button>
+    {% else %}
+      <button>
+        <a href={% url 'profile' %} style="text-decoration:none;">Profile</a>
+      </button>
+    {% endif %}
+    <p style="margin: auto 0 auto 1em;"><a href="{% url 'logout' %}">Logout</a></p>
+
 </div>
 </div>
 {% endblock %}
