@@ -12,13 +12,12 @@ main {
 }
 
 .doc_list {
-	position: relative;
 	background-color: #e1e8f0;
 	border: solid;
 	display: inline-block;
 	padding: 1em;
-	vertical-align: top;
-	height: 30.1em;
+	vertical-align: bottom;
+	height: 21em;
 	overflow-y: scroll;
 	text-align: left;
 }
@@ -35,6 +34,13 @@ main {
 	margin: auto;
 	text-align: left;
 	margin-bottom: 2em;
+}
+
+.search_users {
+	border-style: solid;
+	height: 14em;
+	margin-top: 1em;
+	background-color: #e1e8f0;
 }
 
 .pro_pic {
