@@ -5,95 +5,104 @@
 
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
-<div>
-  <h2>Share Requests</h2>
-    <form type = "get">
-      <select name = "shared_doc_select">
-        <option selected="selected"></option>
-            {% for doc_id, title in sharedDocTitles.items %}
-              <option value={{doc_id}}>{{title}}</option>
-            {% endfor %}
-      </select>
-      <input type="radio" name="decision" value = 'a'>Accept</input>
-      <input type="radio" name="decision" value = 'd'>Deny</input>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
-  <div style="display: inline-block;">
-    <div style="display: flex;">
-      <div id="pro_pic" style="padding-right: 1em;">
-      	<img src="{% static 'img/' %}{{user.prof_pic_num}}.png"/>
+  <div style="position: relative; display: flex;">
+    <div style="display: inline-block; margin-right: 1em;">
+      <div style="display: flex;">
+        <div id="pro_pic" style="padding-right: 1em;">
+        	<img src="{% static 'img/' %}{{user.prof_pic_num}}.png"/>
+        </div>
+        <div>
+          <h1 style="font-weight:bold">{{ user.username }}'s Profile Page</h1>
+          <p>Interests: {{ interests }}</p>
+        </div>
       </div>
-      <div>
-        <h1 style="font-weight:bold">{{ user.username }}'s Profile Page</h1>
-        <p>Interests: {{ interests }}</p>
-        <p>
-      	  <button>
-      		<a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
-      	  </button>
-          <button>
-          <a href="{% url 'suggestTaboo' %}" style="text-decoration:none;">Suggest a Taboo Word</a>
-          </button>
-        </p>
+      <div style="border-style: solid; margin-top: 1em; padding-bottom: 1em; background-color: #e1e8f0;">
+        <h3>Share Requests</h2>
+        <form type = "get">
+          <select name = "shared_doc_select" required>
+                {% for doc_id, title in sharedDocTitles.items %}
+                  <option value={{doc_id}}>{{title}}</option>
+                {% endfor %}
+          </select>
+          <input type="radio" name="decision" value = 'a' required>Accept</input>
+          <input type="radio" name="decision" value = 'd' required>Deny</input>
+          <button type="submit">Submit</button>
+        </form>
       </div>
-    </div>
-    <div style="border-style: solid; margin-top: 1em; background-color: #e1e8f0;">
-      <h3>Search Other Users:</h3>
-      <form type="get" autocomplete="off">
-        <input id="user_search_box" type="text" name="user_search_box" placeholder="Search Username/Interests" style="width: 15em;" />
-        <button id="user_search_submit" type="submit">Submit</button>
-      </form>
-      {% if not userMatches %}
-        <h3>No Matches</h3>
-      {% else %}
-      <table style="margin: auto; padding-top: 1em;">
-        <tr>
-          <th style="padding-right: 2em;">User</th>
-          <th>Interests</th>
-        </tr>
-        {% for match in userMatches %}
+      <div class="search_users">
+        <h3>Search Other Users:</h3>
+        <form type="get" autocomplete="off">
+          <input id="user_search_box" type="text" name="user_search_box" placeholder="Search Username/Interests" style="width: 15em;" />
+          <button id="user_search_submit" type="submit">Submit</button>
+        </form>
+        {% if not userMatches %}
+          <h3>No Matches</h3>
+        {% else %}
+        <table style="margin: auto; padding-top: 1em;">
           <tr>
-            <td style="padding-right: 2em;">{{match.username}}</td>
-            <td>{{match.interests}}</td>
+            <th style="padding-right: 2em;">User</th>
+            <th>Interests</th>
           </tr>
-        {% endfor %}
-        </table>
-        {% endif %}
+          {% for match in userMatches %}
+            <tr>
+              <td style="padding-right: 2em;">{{match.username}}</td>
+              <td>{{match.interests}}</td>
+            </tr>
+          {% endfor %}
+          </table>
+          {% endif %}
+      </div>
     </div>
-  </div>
-  <div class="doc_list">
-	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
-    <form type="get" autocomplete="off">
-      <input id="search_box" type="text" name="search_box" placeholder="Search..." />
-      <button id="search_submit" type="submit">Submit</button>
-    </form>
-	  {% for doc in myDocs %}
-      {% if doc.id in docsContainingSearchQuery %}
-  	  	<p style="background-color: #5AFC3D">
-  	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;"">{{ doc.title }}</a>
-  	  	</p>
-      {% else %}
-        <p>
-          <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
-        </p>
-      {% endif %}
-	  {% endfor %}
-  </div>
-  <div class="doc_list">
-	  <h3 style="font-weight:bold; text-decoration:underline;">Shared Documents</h3>
-	  {% for doc in sharedDocs %}
-	  	<p>
-	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
-	  	</p>
-	  {% endfor %}
-  </div>
-  <div class="doc_list">
-	  <h3 style="font-weight:bold; text-decoration:underline;">Public Documents</h3>
-	  {% for doc in publicDocs %}
-      <p>
-        <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
-      </p>
-    {% endfor %}
+    <div>
+      <div style="margin-top: 2em; margin-left: 7em; display: flex;">
+        <div>
+          <button style="height: 4em; font-size: 1em; margin-bottom: 1em; margin-right: 1em;">
+            <a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
+          </button>
+        </div>
+        <div>
+          <button style="height: 4em; font-size: 1em;">
+            <a href="{% url 'suggestTaboo' %}" style="text-decoration:none;">Suggest a Taboo Word</a>
+          </button>
+        </div>
+      </div>
+      <div style="">
+        <div class="doc_list">
+      	  <h3 style="font-weight:bold; text-decoration:underline;">My Documents</h3>
+          <form type="get" autocomplete="off">
+            <input id="search_box" type="text" name="search_box" placeholder="Search keyword in doc" required/>
+            <button id="search_submit" type="submit">Submit</button>
+          </form>
+      	  {% for doc in myDocs %}
+            {% if doc.id in docsContainingSearchQuery %}
+        	  	<p style="background-color: #5AFC3D">
+        	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;"">{{ doc.title }}</a>
+        	  	</p>
+            {% else %}
+              <p>
+                <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
+              </p>
+            {% endif %}
+      	  {% endfor %}
+        </div>
+        <div class="doc_list">
+      	  <h3 style="font-weight:bold; text-decoration:underline;">Shared Documents</h3>
+      	  {% for doc in sharedDocs %}
+      	  	<p>
+      	  		<a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
+      	  	</p>
+      	  {% endfor %}
+        </div>
+        <div class="doc_list">
+      	  <h3 style="font-weight:bold; text-decoration:underline;">Public Documents</h3>
+      	  {% for doc in publicDocs %}
+            <p>
+              <a href={% url 'view' doc_id=doc.id %} style="text-decoration:none;">{{ doc.title }}</a>
+            </p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
   </div>
   <p><a href="{% url 'logout' %}">Logout</a></p>
 {% else %}

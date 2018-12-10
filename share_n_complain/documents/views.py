@@ -125,8 +125,10 @@ def ViewDoc(request, doc_id):
 	else:
 		updater_name = 'NA'
 
-
-	is_OU = request.user.is_OU
+	if request.user.is_authenticated:
+		is_OU = request.user.is_OU
+	else:
+		is_OU = False
 
 	complaints = getComplaints(doc_id)
 
@@ -208,9 +210,15 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 	updatedContent = content.split('/')
 	for change in changes:													# updates current content to previous version
 		updatedContent = updateContent(updatedContent, change.split('-'))
+
+	if request.user.is_authenticated:
+		is_OU = request.user.is_OU
+	else:
+		is_OU = False
+
 	return render(request, 'viewOldVersion.html', {
 		'user_id': str(request.user.id),
-		'is_OU': request.user.is_OU,
+		'is_OU': is_OU,
 		'owner_id': str(owner_id),
 		'title': title,
 		'doc_id': doc_id,
@@ -451,4 +459,6 @@ def Complain(request, doc_id):
 
 	request.session.flush()
 	context = {}
-	return render(request,'complain.html', context)
+	#return render(request,'complain.html', context)
+	return HttpResponseRedirect('/documents/view/' + doc_id)
+
