@@ -65,6 +65,14 @@
       {% endif %}
     </div>
 </div>
+
+<div style="padding-bottom: 1em;">
+  <form type="get" autocomplete="off">
+    <input id="search_box" type="text" name="search_box" placeholder="Search for (partial) keyword in doc" style="width: 17em;" required />
+    <button id="search_submit" type="submit">Search</button>
+  </form>
+</div>
+
 {% if hasTaboo %}
   <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
     <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL LINES WITH TABOO WORDS BEOFRE CONTINUING!</p>
@@ -73,6 +81,7 @@
     </button>
   </div>
 {% endif %}
+
 {% if user.is_OU and locked and not hasTaboo %}
   {% if locked_by == user_id or owner_id == user_id %}
     <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
@@ -88,12 +97,7 @@
     </div>
   {% endif %}
 {% endif %}
-<div style="padding-bottom: 0.5em;">
-  <form type="get" autocomplete="off">
-    <input id="search_box" type="text" name="search_box" placeholder="Search for (partial) keyword in doc" style="width: 17em;" required />
-    <button id="search_submit" type="submit">Submit</button>
-  </form>
-</div>
+
 <ol class="doc_view">
   {% for line in content %}
     {% if hasTaboo %}
