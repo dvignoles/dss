@@ -449,12 +449,14 @@ def updateHistory(request, doc_id, changes, prevVersion):
 # Redirects ti the current user's profile page
 def ShareDoc(request, doc_id):
 	usernames = getOuUsernames()
+	# disallow sharing w self by removing current users username from collected usernames
+	usernames.remove(str(CustomUser.objects.get(id=request.user.id).username))
+
 	if request.method == 'POST':
 		form = ShareDocForm(request.POST)
 		usernameSharedWith = request.POST.get('username-dropdown')
 		usersSharedWith = CustomUser.objects.filter(username=usernameSharedWith)
 		
-		#NEW CODE ADDED
 		#updates 'share_requests' attribute in selected user
 		#please work
 
@@ -463,10 +465,15 @@ def ShareDoc(request, doc_id):
 		docs = Document.objects.filter(id=doc_id)
 		for doc in docs:
 			doc_id = doc.id
-		if current_requests == "":
+
+		# fixed breakage when no users to share w/ by implementing check on username list. 
+		# if empty, does not update share_requests for anyone.
+		
+		if current_requests == "" and usernames != None:
 			usersSharedWith.update(share_requests=str(doc_id))
 		else:
-			usersSharedWith.update(share_requests=str(current_requests) + '/' + str(doc_id))
+			if usernames != None:
+				usersSharedWith.update(share_requests=str(current_requests) + '/' + str(doc_id))
 
 #old code below
 #		for user in usersSharedWith:
