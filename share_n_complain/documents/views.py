@@ -125,8 +125,10 @@ def ViewDoc(request, doc_id):
 	else:
 		updater_name = 'NA'
 
-
-	is_OU = request.user.is_OU
+	if request.user.is_authenticated:
+		is_OU = request.user.is_OU
+	else:
+		is_OU = False
 
 	complaints = getComplaints(doc_id)
 
