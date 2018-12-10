@@ -453,4 +453,6 @@ def Complain(request, doc_id):
 
 	request.session.flush()
 	context = {}
-	return render(request,'complain.html', context)
+	#return render(request,'complain.html', context)
+	return HttpResponseRedirect('/documents/view/' + doc_id)
+	

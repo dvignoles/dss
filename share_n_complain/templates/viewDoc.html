@@ -5,17 +5,18 @@
 
 {% block content %}
 <div>
-  {% if is_collaborator or owner_id == user_id %}
-    {% if locked %}
-      {% if locked_by == user_id or owner_id == user_id %}
-        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
-      {% endif %}
-    {% else %}
-      {% if is_collaborator or owner_id == user_id %}
-        <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+  <div style="margin-bottom: 1em;">
+    {% if is_collaborator or owner_id == user_id %}
+      {% if locked %}
+        {% if locked_by == user_id or owner_id == user_id %}
+          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/locked.png' %}" style="padding-right: 0.5em;" /></a>
+        {% endif %}
+      {% else %}
+        {% if is_collaborator or owner_id == user_id %}
+          <a href={% url 'changeLockedStatus' doc_id=doc_id %}><img src="{% static 'img/unlocked.png' %}" style="padding-right: 0.5em;"/></a>
+        {% endif %}
       {% endif %}
     {% endif %}
-  {% endif %}
     <div style="display: inline-flex;">
       <h2 style="font-weight:bold; margin: auto;">{{ title }} (v{{ version }})</h2>
       
@@ -27,20 +28,9 @@
         {% endif %}
       {% endifequal %}
     </div>
+  </div>
 
-    <div>
-      {% if updater_id != 0 %}
-        <h3>Last Updated By: {{updater_name}}</h3>
-      {% endif %}
 
-      {% if is_OU %}
-        {% if owner_id != user_id %}
-          <button style="margin-left: 1em; height: 100%; margin: auto; margin-left: 1em;">
-            <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
-          </button>
-        {% endif %}
-      {% endif %}
-    </div>
 
     <div style="font-style: italic; margin-bottom: -1em;">
       {% if owner_id == user_id %}
@@ -117,50 +107,64 @@
   {% endfor %}
 </ol>
 
+<div style="display: flex;">
+  <div>
+    {% if updater_id != 0 %}
+      <h3>Last Updated By: {{updater_name}}</h3>
+    {% endif %}
 
-<div>
-  <h3>Complaints</h3>
-  <table>
-    <tr>
-      <th>ID</th>
-      <th>Complainer</th>
-      <th>Accused</th>
-      <th>Version</th>
-    </tr>
-
-    {% for comp in complaints %}
-      <tr>
-        <td>{{comp.0}}</td>
-        <td>{{comp.1}}</td>
-        <td>{{comp.2}}</td>
-        <td>{{comp.3}}</td>
-      </tr>
-    {% endfor %}
-  </table>
-</div>
-
-{% ifequal owner_id user_id %}
-  <div style="display: inline-block; float: none;">
-      <p>Dismiss Complaint
-        <select name=" DismissComplaint" onchange="location = this.value">
-            <option selected="Complaint"></option>
-            {% for comp in complaints %}
-              <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
-            {% endfor %}
-        </select>
-    </p>
-
-    <p>Remove Accused as Collaborator
-        <select name=" DismissComplaint" onchange="location = this.value">
-            <option selected="Complaint"></option>
-            {% for comp in complaints %}
-              <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
-            {% endfor %}
-        </select>
-    </p>
+    {% if is_OU %}
+      {% if owner_id != user_id %}
+        <button style="margin-bottom: 1em; font-size: 2em;">
+          <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain</a> 
+        </button>
+      {% endif %}
+    {% endif %}
   </div>
-{% endifequal  %}
 
+  <div>
+    <h3>Complaints</h3>
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Complainer</th>
+        <th>Accused</th>
+        <th>Version</th>
+      </tr>
+
+      {% for comp in complaints %}
+        <tr>
+          <td>{{comp.0}}</td>
+          <td>{{comp.1}}</td>
+          <td>{{comp.2}}</td>
+          <td>{{comp.3}}</td>
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+  {% ifequal owner_id user_id %}
+    <div style="display: inline-block; float: none;">
+        <p>Dismiss Complaint
+          <select name=" DismissComplaint" onchange="location = this.value">
+              <option selected="Complaint"></option>
+              {% for comp in complaints %}
+                <option  value={% url 'complaint_dismiss' comp_id=comp.0 %}>{{comp.0}}</option>
+              {% endfor %}
+          </select>
+      </p>
+
+      <p>Remove Accused as Collaborator
+          <select name=" DismissComplaint" onchange="location = this.value">
+              <option selected="Complaint"></option>
+              {% for comp in complaints %}
+                <option  value={% url 'complaint_remove_user' comp_id=comp.0 %}>{{comp.0}}</option>
+              {% endfor %}
+          </select>
+      </p>
+    </div>
+  {% endifequal  %}
+</div>
 
 
 
