@@ -5,6 +5,20 @@
 
 {% block content %}
 {% if user.is_authenticated and user.is_OU%}
+<div>
+  <h2>Share Requests</h2>
+    <form type = "get">
+      <select name = "shared_doc_select">
+        <option selected="selected"></option>
+            {% for doc_id, title in sharedDocTitles.items %}
+              <option value={{doc_id}}>{{title}}</option>
+            {% endfor %}
+      </select>
+      <input type="radio" name="decision" value = 'a'>Accept</input>
+      <input type="radio" name="decision" value = 'd'>Deny</input>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
   <div style="display: inline-block;">
     <div style="display: flex;">
       <div id="pro_pic" style="padding-right: 1em;">
