@@ -94,7 +94,7 @@ def ViewDoc(request, doc_id):
 		version = doc.version
 		locked = doc.locked
 		locked_by = doc.locked_by
-	content = content.split('/')
+	content = content.split('~')
 	try:
 		editor = CustomUser.objects.get(id=locked_by)
 		
@@ -217,7 +217,7 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 	for vh in versionHistory:
 		versionHistory = vh
 	changes = versionHistory.changes.split('/')
-	updatedContent = content.split('/')
+	updatedContent = content.split('~')
 	for change in changes:													# updates current content to previous version
 		updatedContent = updateContent(updatedContent, change.split('-'))
 
@@ -274,10 +274,10 @@ def FixTaboo(request, doc_id):
 				prevVersion = doc.version
 				tabooIndex = doc.taboo_index
 			newContent = form.cleaned_data['newContent']
-			oldContent = oldContent.split('/')
+			oldContent = oldContent.split('~')
 			changes = 'update-' + oldContent[tabooIndex] + '-' + str(tabooIndex+1)
 			oldContent[tabooIndex] = newContent
-			updatedContent = '/'.join(oldContent)
+			updatedContent = '~'.join(oldContent)
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			updateHistory(request, doc_id, changes, prevVersion)
@@ -302,8 +302,8 @@ def AddLine(request, doc_id):
 				lineToRemove = 1
 				updatedContent = newContent
 			else:
-				lineToRemove = len(oldContent.split('/')) + 1
-				updatedContent = oldContent + '/' + newContent
+				lineToRemove = len(oldContent.split('~')) + 1
+				updatedContent = oldContent + '~' + newContent
 			Document.objects.filter(id=doc_id).update(content=updatedContent)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 
@@ -350,13 +350,13 @@ def DeleteLine(request, doc_id):
 			for doc in docs:
 				content = doc.content
 				prevVersion = doc.version
-			content = content.split('/')
+			content = content.split('~')
 			lineToDelete = form.cleaned_data['lineToDelete']
 			lineToAdd = lineToDelete 								#for changes in history model
 			contentToAdd = content[lineToAdd-1] 					#for changes in history model
 			changes = 'add-' + contentToAdd + '-' + str(lineToAdd)  #for changes in history model
 			del content[lineToDelete-1:lineToDelete]
-			content = '/'.join(content)
+			content = '~'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 
@@ -381,13 +381,13 @@ def UpdateLine(request, doc_id):
 			for doc in docs:
 				content = doc.content
 				prevVersion = doc.version
-			content = content.split('/')
+			content = content.split('~')
 			lineToUpdate = form.cleaned_data['lineToUpdate']
 			newContent = form.cleaned_data['newContent']
 			oldContent = content[lineToUpdate-1]
 			changes = 'update-' + oldContent + '-' + str(lineToUpdate)
 			content[lineToUpdate-1] = newContent
-			content = '/'.join(content)
+			content = '~'.join(content)
 			Document.objects.filter(id=doc_id).update(content=content)
 			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 			#keep track of last user
