@@ -56,14 +56,18 @@
     <div>
       <div style="margin-top: 2em; margin-left: 7em; display: flex;">
         <div>
-          <button style="height: 4em; font-size: 1em; margin-bottom: 1em; margin-right: 1em;">
-            <a href="{% url 'create' %}" style="text-decoration:none;">Create New Document</a>
-          </button>
+          <a href="{% url 'create' %}" style="text-decoration:none;">
+            <button style="height: 4em; font-size: 1em; margin-bottom: 1em; margin-right: 1em;">
+              Create New Document
+            </button>
+          </a>
         </div>
         <div>
-          <button style="height: 4em; font-size: 1em;">
-            <a href="{% url 'suggestTaboo' %}" style="text-decoration:none;">Suggest a Taboo Word</a>
-          </button>
+          <a href="{% url 'suggestTaboo' %}" style="text-decoration:none;">
+            <button style="height: 4em; font-size: 1em;">
+              Suggest a Taboo Word
+            </button>
+          </a>
         </div>
       </div>
       <div style="">
