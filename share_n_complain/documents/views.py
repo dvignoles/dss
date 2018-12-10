@@ -107,23 +107,38 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
-	for index, line in enumerate(content): # Checks if document contains a taboo word. If so, 'hasTaboo' attribute of that document is updated to True
+	tabooIndices = []
+	for index, line in enumerate(content): # Finds all indices containing taboo words
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
 				if word in tabooList:
-					hasTaboo = True
-					tabooIndex = index
+					tabooIndices.append(index)
 					break
-			break
 		elif line in tabooList:
-			hasTaboo = True
-			tabooIndex = index
+			tabooIndices.append(index)
+
+	currTabooIndex = None
+	for index, line in enumerate(content): # Finds taboo word with lowest index
+		if " " in line:
+			line = line.split(" ")
+			for word in line:
+				if word in tabooList:
+					currTabooIndex = index
+					break
+			if currTabooIndex:
+				break
+		elif line in tabooList:
+			currTabooIndex = index
 			break
-		else:
-			hasTaboo = False
-			tabooIndex = None
-	Document.objects.filter(id=doc_id).update(taboo_index=tabooIndex)
+	print(currTabooIndex)
+
+	if len(tabooIndices) > 0:
+		hasTaboo = True
+	else:
+		hasTaboo = False
+
+	Document.objects.filter(id=doc_id).update(taboo_index=currTabooIndex)
 
 	#ID of last persion to update document
 	updater_id = Document.objects.get(id=doc_id).updater_id
@@ -156,7 +171,8 @@ def ViewDoc(request, doc_id):
     	'editor': editor,
     	'tabooList': tabooList,
     	'hasTaboo': hasTaboo,
-    	'tabooIndex': tabooIndex,
+    	'currTabooIndex': currTabooIndex,
+    	'tabooIndices': tabooIndices,
 		'updater_id' : updater_id,
 		'updater_name': updater_name,
 		'complaints': complaints,
@@ -284,7 +300,10 @@ def FixTaboo(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = AddLineForm()
-	return render(request, 'addLine.html', {'form': form})
+	return render(request, 'addLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Adds a line to the end of a document using the AddLine form in documents/forms.py
 # Renders the updated document by redirecting to documents/view/doc_id
@@ -315,7 +334,10 @@ def AddLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = AddLineForm()
-	return render(request, 'addLine.html', {'form': form})
+	return render(request, 'addLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 	####  Adds to a specific line number
 	# if request.method == 'POST':
 	# 	form = AddLineForm(request.POST)
@@ -369,7 +391,10 @@ def DeleteLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = DeleteLineForm()
-	return render(request, 'deleteLine.html', {'form': form})
+	return render(request, 'deleteLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Updates a specific line of a document to new content via UpdateLineForm in documents/forms.py
 # Renders the updated document by redirecting to documents/view/doc_id
@@ -397,7 +422,10 @@ def UpdateLine(request, doc_id):
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = UpdateLineForm()
-	return render(request, 'updateLine.html', {'form': form})
+	return render(request, 'updateLine.html', {
+		'form': form,
+		'doc_id': doc_id,
+		})
 
 # Helper function to update the History model whenever a document is changed
 def updateHistory(request, doc_id, changes, prevVersion):
