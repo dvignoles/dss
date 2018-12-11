@@ -466,17 +466,7 @@ def ShareDoc(request, doc_id):
 		docs = Document.objects.filter(id=doc_id)
 		for doc in docs:
 			doc_id = doc.id
-<<<<<<< HEAD
 
-		# fixed breakage when no users to share w/ by implementing check on username list. 
-		# if empty, does not update share_requests for anyone.
-		
-		if current_requests == "" and usernames != None:
-			usersSharedWith.update(share_requests=str(doc_id))
-		else:
-			if usernames != None:
-				usersSharedWith.update(share_requests=str(current_requests) + '/' + str(doc_id))
-=======
 			owner_id = str(doc.owner_id)
 			collaborators = doc.collaborators
 		collaborators = collaborators.split('/')
@@ -487,7 +477,7 @@ def ShareDoc(request, doc_id):
 					usersSharedWith.update(share_requests=str(doc_id))
 				else:
 					usersSharedWith.update(share_requests=str(currentRequests) + '/' + str(doc_id))
->>>>>>> 30fb4ae7f18d0123acdf4d890d4a570e65a91573
+
 
 #old code below
 #		for user in usersSharedWith:
