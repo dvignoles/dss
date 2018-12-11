@@ -95,6 +95,7 @@ def ViewDoc(request, doc_id):
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
 		owner_id = doc.owner_id
+		owner_username = CustomUser.objects.get(id=owner_id).username
 		title = doc.title
 		content = doc.content
 		private = doc.private
@@ -179,7 +180,7 @@ def ViewDoc(request, doc_id):
 		doc_owner_notSU = False
 	else:
 		doc_owner_notSU = True
-
+	
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'is_OU':is_OU,
@@ -203,7 +204,8 @@ def ViewDoc(request, doc_id):
 		'complaints': complaints,
     	'searchQuery': searchQuery,
 		'collab_usernames': collab_usernames,
-		'doc_owner_notSU': doc_owner_notSU
+		'doc_owner_notSU': doc_owner_notSU,
+		'owner_username' : owner_username
     })
 
 def Complaint_Dismiss(request, comp_id):
