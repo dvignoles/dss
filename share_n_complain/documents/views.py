@@ -165,6 +165,14 @@ def ViewDoc(request, doc_id):
 
 	complaints = getComplaints(doc_id)
 
+	collaborators.remove('')
+	all_usernames = getOuUsernames()
+	collab_usernames = []
+	for username in all_usernames:
+		for collaborator in collaborators:
+			if CustomUser.objects.get(id=collaborator).username == username:
+				collab_usernames.append(username)
+		
 	doc_owner_SU = Document.objects.get(id=doc_id).owner.is_superuser
 	doc_owner_notSU = None
 	if(doc_owner_SU):
@@ -194,8 +202,10 @@ def ViewDoc(request, doc_id):
 		'updater_name': updater_name,
 		'complaints': complaints,
     	'searchQuery': searchQuery,
+		'collab_usernames': collab_usernames,
 		'doc_owner_notSU': doc_owner_notSU
     })
+
 def Complaint_Dismiss(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
 	comp.delete()
@@ -414,20 +424,21 @@ def DeleteLine(request, doc_id):
 				prevVersion = doc.version
 			content = content.split('~')
 			lineToDelete = form.cleaned_data['lineToDelete']
-			lineToAdd = lineToDelete 								#for changes in history model
-			contentToAdd = content[lineToAdd-1] 					#for changes in history model
-			changes = 'add-' + contentToAdd + '-' + str(lineToAdd)  #for changes in history model
-			del content[lineToDelete-1:lineToDelete]
-			content = '~'.join(content)
-			Document.objects.filter(id=doc_id).update(content=content)
-			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+			if lineToDelete in range(1,len(content)+1):
+				lineToAdd = lineToDelete 								#for changes in history model
+				contentToAdd = content[lineToAdd-1] 					#for changes in history model
+				changes = 'add-' + contentToAdd + '-' + str(lineToAdd)  #for changes in history model
+				del content[lineToDelete-1:lineToDelete]
+				content = '~'.join(content)
+				Document.objects.filter(id=doc_id).update(content=content)
+				Document.objects.filter(id=doc_id).update(version=prevVersion+1)
 
 
-			#keep track of last user
-			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+				#keep track of last user
+				Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
 
 
-			updateHistory(request, doc_id, changes, prevVersion)
+				updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = DeleteLineForm()
@@ -448,17 +459,18 @@ def UpdateLine(request, doc_id):
 				prevVersion = doc.version
 			content = content.split('~')
 			lineToUpdate = form.cleaned_data['lineToUpdate']
-			newContent = form.cleaned_data['newContent']
-			oldContent = content[lineToUpdate-1]
-			changes = 'update-' + oldContent + '-' + str(lineToUpdate)
-			content[lineToUpdate-1] = newContent
-			content = '~'.join(content)
-			Document.objects.filter(id=doc_id).update(content=content)
-			Document.objects.filter(id=doc_id).update(version=prevVersion+1)
-			#keep track of last user
-			Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
-			
-			updateHistory(request, doc_id, changes, prevVersion)
+			if lineToUpdate in range(1,len(content) + 1):
+				newContent = form.cleaned_data['newContent']
+				oldContent = content[lineToUpdate-1]
+				changes = 'update-' + oldContent + '-' + str(lineToUpdate)
+				content[lineToUpdate-1] = newContent
+				content = '~'.join(content)
+				Document.objects.filter(id=doc_id).update(content=content)
+				Document.objects.filter(id=doc_id).update(version=prevVersion+1)
+				#keep track of last user
+				Document.objects.filter(id=doc_id).update(updater_id = request.user.id)
+				
+				updateHistory(request, doc_id, changes, prevVersion)
 			return HttpResponseRedirect('/documents/view/' + doc_id)
 	else:
 		form = UpdateLineForm()

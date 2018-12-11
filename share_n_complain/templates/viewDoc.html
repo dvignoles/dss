@@ -139,7 +139,7 @@
           <button style="margin-bottom: 1em; font-size: 2em;">
             <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain-Update</a> 
           </button>
-          {%if doc_owner_notSU %}
+          {% if doc_owner_notSU %}
           <button style="margin-bottom: 1em; font-size: 2em;">
             <a href={% url 'complain_owner' doc_id=doc_id %} style="text-decoration:none;">Complain-Owner</a> 
           </button>
@@ -148,6 +148,18 @@
       {% endif %}
     {% endif %}
   </div>
+
+  <div>
+    <h3 style="padding:0; margin:0;">Collaborators:</h3>
+    <ul style="list-style: none; padding:0; margin:0;"> 
+    {% for collab_username in collab_usernames %}
+      {% if collab_username != '' %}
+        <li> {{collab_username}} </li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+
   <div style="margin: 0px auto; display: flex; width: 80%">
     {% if complaints %}
       <div style="margin-left: 1em; margin-right: 1em; border-right: solid; padding-left: 1em; padding-right: 1em;">
