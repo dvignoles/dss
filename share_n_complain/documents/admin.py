@@ -21,11 +21,14 @@ class DocumentAdmin(admin.ModelAdmin):
 
 #TODO: transfer ownership of doc to the admin && del complaint
 def take_ownership(admin, request, queryset):
-	pass
+	ownership_complaint = queryset.first()
+	doc_id = ownership_complaint.doc.id
+	Document.objects.filter(id=doc_id).update(owner=request.user)
+	queryset.delete()
 
 #TODO: Delete Complaint
 def dismiss_complaint(admin, request, queryset):
-	pass
+	queryset.delete()
 
 class Complaints_OwnerAdmin(admin.ModelAdmin):
 	list_display = ['doc_id','owner','complainer']
