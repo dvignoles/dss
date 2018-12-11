@@ -148,6 +148,18 @@
       {% endif %}
     {% endif %}
   </div>
+
+  <div>
+    <h3 style="padding:0; margin:0;">Collaborators:</h3>
+    <ul style="list-style: none; padding:0; margin:0;"> 
+    {% for collab_username in collab_usernames %}
+      {% if collab_username != '' %}
+        <li> {{collab_username}} </li>
+      {% endif %}
+    {% endfor %}
+    </ul>
+  </div>
+
   <div style="margin: 0px auto; display: flex; width: 80%">
     {% if complaints %}
       <div style="margin-left: 1em; margin-right: 1em; border-right: solid; padding-left: 1em; padding-right: 1em;">

@@ -89,6 +89,8 @@ def ViewDoc(request, doc_id):
 	doc_session_set(request, doc_id,old_version=False)
 
 	searchQuery = request.GET.get('search_box')  # gets search query from search box
+	if searchQuery:
+		searchQuery = searchQuery.lower()
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
@@ -113,8 +115,10 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
+	tabooList = [word.lower() for word in tabooList]
 	tabooIndices = []
 	for index, line in enumerate(content): # Finds all indices containing taboo words
+		line = line.lower()
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
@@ -126,6 +130,7 @@ def ViewDoc(request, doc_id):
 
 	currTabooIndex = None
 	for index, line in enumerate(content): # Finds taboo word with lowest index
+		line = line.lower()
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
@@ -137,7 +142,6 @@ def ViewDoc(request, doc_id):
 		elif line in tabooList:
 			currTabooIndex = index
 			break
-	print(currTabooIndex)
 
 	if len(tabooIndices) > 0:
 		hasTaboo = True
@@ -161,6 +165,14 @@ def ViewDoc(request, doc_id):
 
 	complaints = getComplaints(doc_id)
 
+	collaborators.remove('')
+	all_usernames = getOuUsernames()
+	collab_usernames = []
+	for username in all_usernames:
+		for collaborator in collaborators:
+			if CustomUser.objects.get(id=collaborator).username == username:
+				collab_usernames.append(username)
+		
 	doc_owner_SU = Document.objects.get(id=doc_id).owner.is_superuser
 	doc_owner_notSU = None
 	if(doc_owner_SU):
@@ -190,8 +202,10 @@ def ViewDoc(request, doc_id):
 		'updater_name': updater_name,
 		'complaints': complaints,
     	'searchQuery': searchQuery,
+		'collab_usernames': collab_usernames,
 		'doc_owner_notSU': doc_owner_notSU
     })
+
 def Complaint_Dismiss(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
 	comp.delete()
