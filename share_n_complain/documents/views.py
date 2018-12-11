@@ -89,6 +89,8 @@ def ViewDoc(request, doc_id):
 	doc_session_set(request, doc_id,old_version=False)
 
 	searchQuery = request.GET.get('search_box')  # gets search query from search box
+	if searchQuery:
+		searchQuery = searchQuery.lower()
 	docs = Document.objects.filter(id=doc_id)
 	docHistory = History.objects.filter(doc_id=doc_id)
 	for doc in docs:
@@ -120,7 +122,6 @@ def ViewDoc(request, doc_id):
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
-				word = word.lower()
 				if word in tabooList:
 					tabooIndices.append(index)
 					break
