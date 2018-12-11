@@ -2,7 +2,7 @@
 
 #Prevent submitting multiple ownership complaints about 1 document
 
-#Prevent ownership complaints if doc owned by superuser
+#Prevent ownership complaints if doc owned by superuser (DONE)
 
 #Disallow 'update line' on invalid line numbers
 
