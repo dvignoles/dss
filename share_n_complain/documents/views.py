@@ -161,6 +161,17 @@ def ViewDoc(request, doc_id):
 
 	complaints = getComplaints(doc_id)
 
+	print(collaborators)
+	collaborators.remove('')
+	all_usernames = getOuUsernames()
+	collab_usernames = []
+	for username in all_usernames:
+		for collaborator in collaborators:
+			if CustomUser.objects.get(id=collaborator).username == username:
+				collab_usernames.append(username)
+
+	print(collab_usernames)
+		
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'is_OU':is_OU,
@@ -183,7 +194,9 @@ def ViewDoc(request, doc_id):
 		'updater_name': updater_name,
 		'complaints': complaints,
     	'searchQuery': searchQuery,
+		'collab_usernames': collab_usernames
     })
+
 def Complaint_Dismiss(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
 	comp.delete()
