@@ -55,7 +55,7 @@ class Complaints(models.Model):
 	complainer = models.IntegerField(null=True)
 	accused = models.IntegerField(null=True)
 
-
-
-
-	
+#Complaints about a Document Owner to SU
+class Complaints_Owner(models.Model):
+	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
+	complainer = models.IntegerField(null=True)

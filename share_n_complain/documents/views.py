@@ -13,7 +13,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 
-from documents.models import Document, History, Complaints
+from documents.models import Document, History, Complaints, Complaints_Owner
 from users.models import CustomUser
 from taboo.models import TabooWord
 
@@ -517,4 +517,13 @@ def Complain(request, doc_id):
 	#context = {}
 	#return render(request,'complain.html', context)
 	return HttpResponseRedirect('/documents/view/' + doc_id)
+
+def Complain_Owner(request, doc_id):
+	complainer = request.user.id
+	doc = Document.objects.get(id=request.session['current_doc'])
+	c = Complaints_Owner(doc=doc,complainer=complainer)
+	c.save()
+	doc_session_flush(request)
+	return HttpResponseRedirect('/documents/view/' + doc_id)
+
 

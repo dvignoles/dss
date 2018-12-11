@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^changeLockedStatus/(?P<doc_id>[0-9]*)$', views.ChangeLockedStatus, name='changeLockedStatus'),
     url(r'^complain/(?P<doc_id>[0-9]*)$', views.Complain, name='complain'),
     url(r'^complaint_dismiss/(?P<comp_id>[0-9]*)$', views.Complaint_Dismiss, name = 'complaint_dismiss'),
-    url(r'^complaint_remove_user/(?P<comp_id>[0-9]*)$', views.Complaint_Remove_User, name = 'complaint_remove_user')
+    url(r'^complaint_remove_user/(?P<comp_id>[0-9]*)$', views.Complaint_Remove_User, name = 'complaint_remove_user'),
+    url(r'^complain_owner/(?P<doc_id>[0-9]*)$', views.Complain_Owner, name='complain_owner')
  
 ]
