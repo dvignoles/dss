@@ -19,21 +19,23 @@ class DocumentAdmin(admin.ModelAdmin):
 		self.exclude = ('collaborators','content','version', 'taboo_index')
 		return super(DocumentAdmin,self).change_view(request,object_id)
 
-#TODO: transfer ownership of doc to the admin && del complaint
 def take_ownership(admin, request, queryset):
 	ownership_complaint = queryset.first()
 	doc_id = ownership_complaint.doc.id
 	Document.objects.filter(id=doc_id).update(owner=request.user)
-	queryset.delete()
+	Complaints_Owner.objects.filter(doc_id=doc_id).delete()
+take_ownership.short_description = 'Transfer Doc Ownership to Admin'
 
-#TODO: Delete Complaint
 def dismiss_complaint(admin, request, queryset):
-	queryset.delete()
+	ownership_complaint = queryset.first()
+	doc_id = ownership_complaint.doc.id
+	complainer_user = ownership_complaint.complainer_user
+	Complaints_Owner.objects.filter(doc_id=doc_id,complainer_user=complainer_user).delete()
+dismiss_complaint.short_description = 'Delete Complaint + Duplicate Complaints'
 
 class Complaints_OwnerAdmin(admin.ModelAdmin):
-	list_display = ['doc_id','owner','complainer']
+	list_display = ['id','doc_id','owner','complainer']
 	actions = [take_ownership,dismiss_complaint]
-
 
 admin.site.register(Document, DocumentAdmin)
 admin.site.register(Complaints_Owner, Complaints_OwnerAdmin)
