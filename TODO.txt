@@ -1,4 +1,8 @@
-#Complain about owner button + admin interface (Working on - Daniel)
+#Admin actions for complaints_owner implemenation
+
+#Prevent submitting multiple ownership complaints about 1 document
+
+#Prevent ownership complaints if doc owned by superuser
 
 #Disallow 'update line' on invalid line numbers
 

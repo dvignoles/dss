@@ -19,11 +19,11 @@ class DocumentAdmin(admin.ModelAdmin):
 		self.exclude = ('collaborators','content','version', 'taboo_index')
 		return super(DocumentAdmin,self).change_view(request,object_id)
 
-#TODO: transfer ownership of doc to the admin && set resolved to True
+#TODO: transfer ownership of doc to the admin && del complaint
 def take_ownership(admin, request, queryset):
 	pass
 
-#TODO: Set Resolved to True
+#TODO: Delete Complaint
 def dismiss_complaint(admin, request, queryset):
 	pass
 
