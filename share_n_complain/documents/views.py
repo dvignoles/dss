@@ -521,7 +521,7 @@ def Complain(request, doc_id):
 def Complain_Owner(request, doc_id):
 	complainer = request.user.id
 	doc = Document.objects.get(id=request.session['current_doc'])
-	c = Complaints_Owner(doc=doc,complainer=complainer)
+	c = Complaints_Owner(doc=doc,complainer_user=complainer)
 	c.save()
 	doc_session_flush(request)
 	return HttpResponseRedirect('/documents/view/' + doc_id)

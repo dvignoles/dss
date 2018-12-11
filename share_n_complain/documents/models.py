@@ -58,4 +58,12 @@ class Complaints(models.Model):
 #Complaints about a Document Owner to SU
 class Complaints_Owner(models.Model):
 	doc = models.ForeignKey(Document, on_delete=models.CASCADE)
-	complainer = models.IntegerField(null=True)
+	complainer_user = models.IntegerField(null=True)
+
+	def doc_id(self):
+		return self.doc.id
+	def owner(self):
+		return self.doc.owner
+	def complainer(self):
+		return CustomUser.objects.get(id=self.complainer_user).username
+
