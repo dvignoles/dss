@@ -113,11 +113,14 @@ def ViewDoc(request, doc_id):
 	else:
 		is_collaborator = False
 	tabooList = getTabooList()
+	tabooList = [word.lower() for word in tabooList]
 	tabooIndices = []
 	for index, line in enumerate(content): # Finds all indices containing taboo words
+		line = line.lower()
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
+				word = word.lower()
 				if word in tabooList:
 					tabooIndices.append(index)
 					break
@@ -126,6 +129,7 @@ def ViewDoc(request, doc_id):
 
 	currTabooIndex = None
 	for index, line in enumerate(content): # Finds taboo word with lowest index
+		line = line.lower()
 		if " " in line:
 			line = line.split(" ")
 			for word in line:
@@ -137,7 +141,6 @@ def ViewDoc(request, doc_id):
 		elif line in tabooList:
 			currTabooIndex = index
 			break
-	print(currTabooIndex)
 
 	if len(tabooIndices) > 0:
 		hasTaboo = True
