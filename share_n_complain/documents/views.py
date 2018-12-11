@@ -270,6 +270,25 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 	else:
 		is_OU = False
 
+	#Taboo List checking
+	tabooList = getTabooList()
+	tabooList = [word.lower() for word in tabooList]
+	tabooIndices = []
+	for index, line in enumerate(updatedContent): # Finds all indices containing taboo words
+		line = line.lower()
+		if " " in line:
+			line = line.split(" ")
+			for word in line:
+				if word in tabooList:
+					tabooIndices.append(index)
+					break
+		elif line in tabooList:
+			tabooIndices.append(index)
+	if len(tabooIndices) > 0:
+		hasTaboo = True
+	else:
+		hasTaboo = False
+
 	return render(request, 'viewOldVersion.html', {
 		'user_id': str(request.user.id),
 		'is_OU': is_OU,
@@ -281,7 +300,10 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
     	'content': updatedContent,
     	'docHistory': docHistory,
 		'updater_id':versionUpdaterId,
-		'updater':versionUpdaterName
+		'updater':versionUpdaterName,
+		'tabooList': tabooList,
+		'tabooIndices': tabooIndices,
+		'hasTaboo': hasTaboo,
     })
 
 # Helper function for rolling back document content to previous version
