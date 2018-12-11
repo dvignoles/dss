@@ -1,20 +1,24 @@
-#Admin actions for complaints_owner implemenation
+#Admin actions for complaints_owner implemenation (DONE)
 
-#Prevent submitting multiple ownership complaints about 1 document
+#Prevent submitting multiple ownership complaints about 1 document (DONE-enough)
 
 #Prevent ownership complaints if doc owned by superuser (DONE)
 
-#Disallow 'update line' on invalid line numbers
+#Disallow 'update line' on invalid line numbers *** -Neal
 
-#Share Doc redirect back to Document instead of profile page
+#Share Doc redirect back to Document instead of profile page (DONE)
 
-#Taboo words displaying in Version History View
+#Taboo words displaying in Version History View *** -Neal
 
-#Display collaborators on document view
+#Display collaborators on document view *** -Carl
 
-#Disallow adding self as collaborator, or adding same collaborator multiple times
+#Disallow adding self as collaborator, or adding same collaborator multiple times (DONE)
 
 #Complaints Table Formatting
 
-#Disallow complaining about version 1 (empty doc)
+#Disallow complaining about version 1 (empty doc) *** -Dan
+
+#Taboo-list case-sensitivity *** -Neal (DONE)
+
+#Search case-sensitivity *** -Neal (DONE)
 
