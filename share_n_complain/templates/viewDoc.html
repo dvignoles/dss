@@ -135,12 +135,16 @@
       <h3>Last Updated By: {{updater_name}}</h3>
     {% if is_OU %}
       {% if owner_id != user_id %}
-        <button style="margin-bottom: 1em; font-size: 2em;">
-          <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain-Update</a> 
-        </button>
-        <button style="margin-bottom: 1em; font-size: 2em;">
-          <a href={% url 'complain_owner' doc_id=doc_id %} style="text-decoration:none;">Complain-Owner</a> 
-        </button>
+        {% if version != 1 %}
+          <button style="margin-bottom: 1em; font-size: 2em;">
+            <a href={% url 'complain' doc_id=doc_id %} style="text-decoration:none;">Complain-Update</a> 
+          </button>
+          {%if doc_owner_notSU %}
+          <button style="margin-bottom: 1em; font-size: 2em;">
+            <a href={% url 'complain_owner' doc_id=doc_id %} style="text-decoration:none;">Complain-Owner</a> 
+          </button>
+          {% endif %}
+        {% endif %}
       {% endif %}
     {% endif %}
   </div>

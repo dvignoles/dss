@@ -165,6 +165,13 @@ def ViewDoc(request, doc_id):
 
 	complaints = getComplaints(doc_id)
 
+	doc_owner_SU = Document.objects.get(id=doc_id).owner.is_superuser
+	doc_owner_notSU = None
+	if(doc_owner_SU):
+		doc_owner_notSU = False
+	else:
+		doc_owner_notSU = True
+
 	return render(request, 'viewDoc.html', {
 		'user_id': str(request.user.id),
 		'is_OU':is_OU,
@@ -187,6 +194,7 @@ def ViewDoc(request, doc_id):
 		'updater_name': updater_name,
 		'complaints': complaints,
     	'searchQuery': searchQuery,
+		'doc_owner_notSU': doc_owner_notSU
     })
 def Complaint_Dismiss(request, comp_id):
 	comp = Complaints.objects.get(id=comp_id)
