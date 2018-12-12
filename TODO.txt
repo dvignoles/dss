@@ -4,21 +4,21 @@
 
 #Prevent ownership complaints if doc owned by superuser (DONE)
 
-#Disallow 'update line' on invalid line numbers *** -Neal
+#Disallow 'update/delete line' on invalid line numbers (DONE)
 
 #Share Doc redirect back to Document instead of profile page (DONE)
 
-#Taboo words displaying in Version History View *** -Neal
+#Taboo words displaying in Version History View (DONE)
 
-#Display collaborators on document view *** -Carl
+#Display collaborators on document view (DONE)
 
 #Disallow adding self as collaborator, or adding same collaborator multiple times (DONE)
 
 #Complaints Table Formatting
 
-#Disallow complaining about version 1 (empty doc) *** -Dan
+#Disallow complaining about version 1 (empty doc) (DONE)
 
-#Taboo-list case-sensitivity *** -Neal (DONE)
+#Taboo-list case-sensitivity (DONE)
 
-#Search case-sensitivity *** -Neal (DONE)
+#Search case-sensitivity (DONE)
 
