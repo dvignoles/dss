@@ -6,8 +6,10 @@ from django.contrib.auth.models import Group
 from .forms import CustomUserCreationForm, CustomUserChangeForm
 from .models import CustomUser
 
+import random as random
+
 def promote_user(admin, request, queryset):
-	queryset.update(is_OU=True)
+	queryset.update(is_OU=True, prof_pic_num=random.randrange(20))
 promote_user.short_description = "Promote GU to OU"
 
 def demote_user(admin, request, queryset):

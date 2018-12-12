@@ -4,7 +4,6 @@ from .models import CustomUser
 import random as random
 
 class CustomUserCreationForm(UserCreationForm):
-
 	class Meta(UserCreationForm):
 		model = CustomUser
 		fields = ('username', 'interests')
