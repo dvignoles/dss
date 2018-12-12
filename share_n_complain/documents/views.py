@@ -257,7 +257,9 @@ def ViewOldVersion(request, doc_id, delimiter, oldVersion):
 
 	#Get Updater Username for this Version History
 	versionHistoryEntry = versionHistory[0]
-	versionUpdaterId= versionHistoryEntry.updater_ids[-1]
+	allVersionUpdaterIds = versionHistoryEntry.updater_ids
+	allVersionUpdaterIds = allVersionUpdaterIds.split('/')
+	versionUpdaterId= allVersionUpdaterIds[-1]
 	versionUpdaterName = CustomUser.objects.get(id=versionUpdaterId).username
 
 	for vh in versionHistory:
