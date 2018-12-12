@@ -23,3 +23,19 @@ $ pip install Django
 ```
 $ python3 manage.py runserver
 ```
+
+## Built-in Users/Passwords
+### Admin/Superuser
+| Username |   Password  |
+|----------|-------------|
+| sncadmin | sncpassword |
+### Ordinary Users
+| Username |   Password   |
+|----------|--------------|
+|   neal   |   nealneal   |
+|  daniel  | danieldaniel |
+|   neal   |   nealneal   |
+
+## Getting Started
+### Enter Site
+![image](getting_started_images/enter_site.png)
