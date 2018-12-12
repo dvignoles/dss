@@ -1,0 +1,41 @@
+
+
+
+1. Enter as GU
+
+2. View A Public Document as GU
+
+3. Apply for OU
+
+4. Approve Application in Admin Panel
+
+5. Login as Promoted User
+
+6. Create A Document
+
+7. Add/delete/update some lines (multiple words)
+
+8. Show History (DATABASE) and Revert
+
+9. Share Doc with someone
+
+10. Login and accept share request
+
+11. Edit shared Doc
+
+12. Complain about Update and Doc Owner
+
+13. Suggest a Taboo word
+
+14. Approve Tabooo word in Admin Panel
+
+15. Dismiss Owner Complaints in Admin Panel
+
+16. Add a Taboo Word to Document
+
+17. Correct Taboo word
+
+18. Demo Update Complaint Handling
+
+19. Search Functionality 
+
