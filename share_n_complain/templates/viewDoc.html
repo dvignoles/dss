@@ -74,12 +74,14 @@
 </div>
 
 {% if hasTaboo %}
-  <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
-    <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL LINES WITH TABOO WORDS BEOFRE CONTINUING!</p>
-    <button>
-      <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ currTabooIndex|add:1 }}</a>
-    </button>
-  </div>
+  {% if owner_id == user_id %}
+    <div style="margin-top: -0.5em; margin-bottom: 0.5em;">
+      <p style="font-style: italic; font-weight: bold; background-color: red;">YOU MUST FIX ALL LINES WITH TABOO WORDS BEOFRE CONTINUING!</p>
+      <button>
+        <a href={% url 'fixTaboo' doc_id=doc_id %} style="text-decoration:none;">Fix taboo word in line {{ currTabooIndex|add:1 }}</a>
+      </button>
+    </div>
+  {% endif %}
 {% endif %}
 
 {% if user.is_OU and locked and not hasTaboo %}
