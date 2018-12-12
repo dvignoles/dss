@@ -33,7 +33,7 @@ $ python3 manage.py runserver
 ### Ordinary Users
 | Username |   Password   |
 |----------|--------------|
-|   neal   |   nealneal   |
+|   carl   |   carlcarl   |
 |  daniel  | danieldaniel |
 |   neal   |   nealneal   |
 
