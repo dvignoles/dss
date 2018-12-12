@@ -7,7 +7,7 @@ class CustomUser(AbstractUser):
     
     interests = models.CharField(max_length=100, default='')
     is_OU = models.BooleanField('OU status', default=False)
-    prof_pic_num = models.IntegerField(default=random.randrange(20))
+    prof_pic_num = models.IntegerField(default=None, null=True)
     ## share reqs attempt
     share_requests = models.CharField(max_length=100, default='')
     
